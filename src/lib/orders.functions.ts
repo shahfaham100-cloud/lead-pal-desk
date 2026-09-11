@@ -34,7 +34,7 @@ export const getOrder = createServerFn({ method: "GET" })
   .inputValidator((data: { id: string }) => ({ id: String(data.id) }))
   .handler(async ({ data }) => {
     const { requireRole } = await import("./auth.server");
-  const role = await requireRole();
+    const role = await requireRole();
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: row, error } = await supabaseAdmin
       .from("orders")
