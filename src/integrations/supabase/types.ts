@@ -25,6 +25,7 @@ export type Database = {
           email: string
           fabric: string
           id: string
+          items: Json
           mockup_url: string
           order_no: string
           phone: string
@@ -47,6 +48,7 @@ export type Database = {
           email?: string
           fabric?: string
           id?: string
+          items?: Json
           mockup_url?: string
           order_no?: string
           phone?: string
@@ -69,6 +71,7 @@ export type Database = {
           email?: string
           fabric?: string
           id?: string
+          items?: Json
           mockup_url?: string
           order_no?: string
           phone?: string
