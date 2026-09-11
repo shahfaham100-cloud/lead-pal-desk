@@ -95,4 +95,3 @@ export function orderSpecSummary(order: Pick<Order, "items">): string {
   const first = `${items[0]!.product_type} · ${items[0]!.fabric}`;
   return items.length > 1 ? `${first} +${items.length - 1} more` : first;
 }
-

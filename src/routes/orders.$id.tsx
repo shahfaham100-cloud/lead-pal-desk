@@ -107,7 +107,7 @@ function OrderDetailPage() {
       },
     });
 
-    setForm(order);
+    setForm({ ...order, items: orderItems(order) });
     setSaving(false);
     setSaved(true);
     router.invalidate();

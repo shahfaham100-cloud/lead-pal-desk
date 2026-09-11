@@ -43,7 +43,6 @@ function text(value: unknown, max = 500): string {
   return String(value ?? "").slice(0, max);
 }
 
-
 export const listOrders = createServerFn({ method: "GET" }).handler(async () => {
   const { requireRole } = await import("./auth.server");
   const role = await requireRole();
