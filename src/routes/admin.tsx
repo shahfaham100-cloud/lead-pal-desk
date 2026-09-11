@@ -2,10 +2,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { AppHeader } from "@/components/AppHeader";
 import { StageBadge } from "@/components/StageBadge";
-import { requireRole } from "@/lib/auth.functions";
 import { STAGES, totalUnits, type Order } from "@/lib/session";
 
 const getAdminOverview = createServerFn({ method: "GET" }).handler(async () => {
+  const { requireRole } = await import("@/lib/auth.server");
   const role = await requireRole(["Admin"]);
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin

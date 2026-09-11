@@ -1,6 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
 import { notFound } from "@tanstack/react-router";
-import { requireRole } from "./auth.functions";
 import { STAGES, type Order, type SizeRow } from "./session";
 
 const SELECT = "*";
@@ -20,6 +19,7 @@ function text(value: unknown, max = 500): string {
 }
 
 export const listOrders = createServerFn({ method: "GET" }).handler(async () => {
+  const { requireRole } = await import("./auth.server");
   const role = await requireRole();
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin
@@ -33,7 +33,8 @@ export const listOrders = createServerFn({ method: "GET" }).handler(async () => 
 export const getOrder = createServerFn({ method: "GET" })
   .inputValidator((data: { id: string }) => ({ id: String(data.id) }))
   .handler(async ({ data }) => {
-    const role = await requireRole();
+    const { requireRole } = await import("./auth.server");
+  const role = await requireRole();
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: row, error } = await supabaseAdmin
       .from("orders")
@@ -46,6 +47,7 @@ export const getOrder = createServerFn({ method: "GET" })
   });
 
 export const createOrder = createServerFn({ method: "POST" }).handler(async () => {
+  const { requireRole } = await import("./auth.server");
   const role = await requireRole();
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin
@@ -70,7 +72,7 @@ export type OrderPatch = Partial<Omit<Order, "id" | "order_no" | "created_at" | 
 export const updateOrder = createServerFn({ method: "POST" })
   .inputValidator((data: { id: string; patch: OrderPatch }) => data)
   .handler(async ({ data }) => {
-    await requireRole();
+    await (await import("./auth.server")).requireRole();
     const p = data.patch ?? {};
     const patch: Record<string, unknown> = {};
     const textFields = [
@@ -113,7 +115,7 @@ export const updateOrder = createServerFn({ method: "POST" })
 export const deleteOrder = createServerFn({ method: "POST" })
   .inputValidator((data: { id: string }) => ({ id: String(data.id) }))
   .handler(async ({ data }) => {
-    await requireRole(["Admin"]);
+    await (await import("./auth.server")).requireRole(["Admin"]);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.from("orders").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
