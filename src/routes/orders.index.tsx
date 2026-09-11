@@ -1,4 +1,5 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect, useRouter } from "@tanstack/react-router";
+import { getCurrentRole } from "@/lib/auth.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
