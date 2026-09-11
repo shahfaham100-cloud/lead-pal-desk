@@ -1,4 +1,5 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect, useRouter } from "@tanstack/react-router";
+import { getCurrentRole } from "@/lib/auth.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
@@ -20,6 +21,10 @@ export const Route = createFileRoute("/orders/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
+  beforeLoad: async () => {
+    const { role } = await getCurrentRole();
+    if (!role) throw redirect({ to: "/" });
+  },
   loader: () => listOrders(),
   component: OrdersPage,
 });
