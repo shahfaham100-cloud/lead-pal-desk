@@ -10,12 +10,16 @@ function sessionConfig() {
     password: process.env["SESSION_SECRET"]!,
     name: "workwear-ops",
     maxAge: 60 * 60 * 24 * 7,
-    cookie: {
-      httpOnly: true,
-      secure: process.env["NODE_ENV"] !== "development",
-      sameSite: "lax" as const,
-      path: "/",
-    },
+    cookie: (() => {
+      const secure = process.env["NODE_ENV"] !== "development";
+      return {
+        httpOnly: true,
+        secure,
+        // The preview runs inside a cross-site iframe, where Lax cookies are dropped.
+        sameSite: (secure ? "none" : "lax") as "none" | "lax",
+        path: "/",
+      };
+    })(),
   };
 }
 
