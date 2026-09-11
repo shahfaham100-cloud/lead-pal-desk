@@ -115,20 +115,22 @@ function FileField({
           ))}
         </ul>
       )}
-      {editable && <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-input bg-card px-3 py-2 text-sm hover:bg-secondary">
-        <input
-          type="file"
-          multiple
-          className="hidden"
-          disabled={busy}
-          onChange={(event) => {
-            const picked = Array.from(event.target.files ?? []);
-            event.target.value = "";
-            if (picked.length > 0) onPick(picked);
-          }}
-        />
-        {busy ? "Uploading…" : files.length > 0 ? "+ Add more files" : "+ Upload files"}
-      </label>}
+      {editable && (
+        <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-input bg-card px-3 py-2 text-sm hover:bg-secondary">
+          <input
+            type="file"
+            multiple
+            className="hidden"
+            disabled={busy}
+            onChange={(event) => {
+              const picked = Array.from(event.target.files ?? []);
+              event.target.value = "";
+              if (picked.length > 0) onPick(picked);
+            }}
+          />
+          {busy ? "Uploading…" : files.length > 0 ? "+ Add more files" : "+ Upload files"}
+        </label>
+      )}
     </div>
   );
 }
@@ -280,38 +282,38 @@ function OrderDetailPage() {
 
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
           <fieldset disabled={isVendor} className="contents">
-          <Panel title="Customer & delivery">
-            <Field label="Customer name">
-              <input
-                className={inputClass}
-                value={form.customer_name}
-                onChange={(event) => set("customer_name", event.target.value)}
-              />
-            </Field>
-            <Field label="Email">
-              <input
-                type="email"
-                className={inputClass}
-                value={form.email}
-                onChange={(event) => set("email", event.target.value)}
-              />
-            </Field>
-            <Field label="Phone">
-              <input
-                className={inputClass}
-                value={form.phone}
-                onChange={(event) => set("phone", event.target.value)}
-              />
-            </Field>
-            <Field label="Delivery address">
-              <textarea
-                rows={3}
-                className={inputClass}
-                value={form.delivery_address}
-                onChange={(event) => set("delivery_address", event.target.value)}
-              />
-            </Field>
-          </Panel>
+            <Panel title="Customer & delivery">
+              <Field label="Customer name">
+                <input
+                  className={inputClass}
+                  value={form.customer_name}
+                  onChange={(event) => set("customer_name", event.target.value)}
+                />
+              </Field>
+              <Field label="Email">
+                <input
+                  type="email"
+                  className={inputClass}
+                  value={form.email}
+                  onChange={(event) => set("email", event.target.value)}
+                />
+              </Field>
+              <Field label="Phone">
+                <input
+                  className={inputClass}
+                  value={form.phone}
+                  onChange={(event) => set("phone", event.target.value)}
+                />
+              </Field>
+              <Field label="Delivery address">
+                <textarea
+                  rows={3}
+                  className={inputClass}
+                  value={form.delivery_address}
+                  onChange={(event) => set("delivery_address", event.target.value)}
+                />
+              </Field>
+            </Panel>
           </fieldset>
 
           <div className="grid gap-6">

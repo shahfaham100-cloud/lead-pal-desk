@@ -104,42 +104,43 @@ export const updateOrder = createServerFn({ method: "POST" })
         patch["stage"] = stage;
       }
     } else {
-    const textFields = [
-      "customer_name",
-      "email",
-      "phone",
-      "delivery_address",
-      "product_type",
-      "fabric",
-      "color",
-      "mockup_url",
-      "print_files_url",
-      "tracking_number",
-      "sales_notes",
-      "designer_notes",
-      "vendor_notes",
-    ] as const;
-    for (const field of textFields) {
-      if (field in p) patch[field] = text(p[field], field.endsWith("notes") ? 4000 : 500);
-    }
-    if ("delivery_address" in p) patch["delivery_address"] = text(p.delivery_address, 1000);
-    for (const field of ["mockup_files", "print_files"] as const) {
-      if (field in p) {
-        const list = Array.isArray(p[field]) ? p[field]! : [];
-        patch[field] = list.slice(0, 50).map((file) => ({
-          name: text(file?.name, 200),
-          path: text(file?.path, 400),
-          size: Math.max(0, Number(file?.size) || 0),
-        }));
+      const textFields = [
+        "customer_name",
+        "email",
+        "phone",
+        "delivery_address",
+        "product_type",
+        "fabric",
+        "color",
+        "mockup_url",
+        "print_files_url",
+        "tracking_number",
+        "sales_notes",
+        "designer_notes",
+        "vendor_notes",
+      ] as const;
+      for (const field of textFields) {
+        if (field in p) patch[field] = text(p[field], field.endsWith("notes") ? 4000 : 500);
       }
-    }
-    if ("sizes" in p) patch["sizes"] = cleanSizes(p.sizes);
-    if ("items" in p) patch["items"] = cleanItems(p.items);
-    if ("stage" in p) {
-      const stage = String(p.stage);
-      if (!STAGES.includes(stage as (typeof STAGES)[number])) throw new Error("Unknown stage");
-      patch["stage"] = stage;
-    }
+      if ("delivery_address" in p) patch["delivery_address"] = text(p.delivery_address, 1000);
+      for (const field of ["mockup_files", "print_files"] as const) {
+        if (field in p) {
+          const value = p[field];
+          const list = Array.isArray(value) ? value : [];
+          patch[field] = list.slice(0, 50).map((file) => ({
+            name: text(file?.name, 200),
+            path: text(file?.path, 400),
+            size: Math.max(0, Number(file?.size) || 0),
+          }));
+        }
+      }
+      if ("sizes" in p) patch["sizes"] = cleanSizes(p.sizes);
+      if ("items" in p) patch["items"] = cleanItems(p.items);
+      if ("stage" in p) {
+        const stage = String(p.stage);
+        if (!STAGES.includes(stage as (typeof STAGES)[number])) throw new Error("Unknown stage");
+        patch["stage"] = stage;
+      }
     }
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
