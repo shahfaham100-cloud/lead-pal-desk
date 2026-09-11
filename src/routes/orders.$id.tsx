@@ -186,22 +186,22 @@ function OrderDetailPage() {
 
           <div className="grid gap-6">
             <Panel title="Files">
-              <Field label="Approved design (mockup)">
-                <input
-                  className={inputClass}
-                  placeholder="https://…"
-                  value={form.mockup_url}
-                  onChange={(event) => set("mockup_url", event.target.value)}
-                />
-              </Field>
-              <Field label="Final print-ready files">
-                <input
-                  className={inputClass}
-                  placeholder="https://…"
-                  value={form.print_files_url}
-                  onChange={(event) => set("print_files_url", event.target.value)}
-                />
-              </Field>
+              <FileField
+                label="Approved design (mockup)"
+                files={fileList(form.mockup_files)}
+                busy={uploading === "mockup_files"}
+                onPick={(files) => upload("mockup_files", files)}
+                onOpen={openFile}
+                onRemove={(path) => removeUploaded("mockup_files", path)}
+              />
+              <FileField
+                label="Final print-ready files"
+                files={fileList(form.print_files)}
+                busy={uploading === "print_files"}
+                onPick={(files) => upload("print_files", files)}
+                onOpen={openFile}
+                onRemove={(path) => removeUploaded("print_files", path)}
+              />
             </Panel>
 
             <Panel title="Shipping">
