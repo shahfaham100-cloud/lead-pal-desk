@@ -1,6 +1,14 @@
 import { createServerFn } from "@tanstack/react-start";
 import { notFound } from "@tanstack/react-router";
-import { STAGES, type Order, type SizeRow } from "./session";
+import {
+  FABRICS,
+  PRODUCT_TYPES,
+  STAGES,
+  emptyItem,
+  type Order,
+  type OrderItem,
+  type SizeRow,
+} from "./session";
 
 const SELECT = "*";
 
@@ -14,9 +22,27 @@ function cleanSizes(value: unknown): SizeRow[] {
     .filter((row) => row.size.length > 0);
 }
 
+function cleanItems(value: unknown): OrderItem[] {
+  if (!Array.isArray(value)) return [];
+  return value.slice(0, 30).map((raw) => {
+    const item = (raw ?? {}) as OrderItem;
+    const type = String(item.product_type ?? "");
+    const fabric = String(item.fabric ?? "");
+    return {
+      product_type: PRODUCT_TYPES.includes(type as (typeof PRODUCT_TYPES)[number])
+        ? type
+        : PRODUCT_TYPES[0],
+      fabric: FABRICS.includes(fabric as (typeof FABRICS)[number]) ? fabric : FABRICS[0],
+      color: String(item.color ?? "").slice(0, 100),
+      sizes: cleanSizes(item.sizes),
+    };
+  });
+}
+
 function text(value: unknown, max = 500): string {
   return String(value ?? "").slice(0, max);
 }
+
 
 export const listOrders = createServerFn({ method: "GET" }).handler(async () => {
   const { requireRole } = await import("./auth.server");
