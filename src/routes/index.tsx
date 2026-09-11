@@ -54,7 +54,7 @@ function SignInPage() {
 
   return (
     <main className="flex min-h-screen items-center justify-center px-4 py-12">
-      <div className="panel w-full max-w-md p-8">
+      <div className="panel w-full max-w-2xl p-8">
         <h1 className="text-2xl font-bold">Workwear Ops</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Production tracking for custom printed workwear — design approval to delivery.
@@ -62,7 +62,7 @@ function SignInPage() {
 
         <form onSubmit={onSubmit} className="mt-6">
           <p className="label-caps">Sign in as</p>
-          <div className="mt-2 grid gap-3 sm:grid-cols-2">
+          <div className="mt-2 grid gap-3 sm:grid-cols-3">
             {ROLES.map((option) => (
               <button
                 type="button"

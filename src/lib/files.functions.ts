@@ -10,7 +10,7 @@ export const createUploadUrl = createServerFn({ method: "POST" })
   .inputValidator((data: { orderId: string; field: string; fileName: string }) => data)
   .handler(async ({ data }) => {
     const { requireRole } = await import("./auth.server");
-    await requireRole();
+    await requireRole(["Sales Agent", "Admin"]);
     const field = data.field === "print_files" ? "print_files" : "mockup_files";
     const path = `${String(data.orderId)}/${field}/${Date.now()}-${safeName(data.fileName)}`;
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -38,7 +38,7 @@ export const removeFile = createServerFn({ method: "POST" })
   .inputValidator((data: { path: string }) => ({ path: String(data.path) }))
   .handler(async ({ data }) => {
     const { requireRole } = await import("./auth.server");
-    await requireRole();
+    await requireRole(["Sales Agent", "Admin"]);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     await supabaseAdmin.storage.from(BUCKET).remove([data.path]);
     return { ok: true as const };

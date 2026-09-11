@@ -1,8 +1,9 @@
-export const ROLES = ["Sales Agent", "Admin"] as const;
+export const ROLES = ["Sales Agent", "Vendor", "Admin"] as const;
 export type Role = (typeof ROLES)[number];
 
 export const ROLE_DESCRIPTIONS: Record<Role, string> = {
   "Sales Agent": "Create orders & upload approved designs",
+  Vendor: "Update production, shipping & vendor notes",
   Admin: "Full access & settings",
 };
 

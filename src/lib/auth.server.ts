@@ -26,7 +26,9 @@ export function matches(input: string, expected: string): boolean {
 }
 
 export function expectedPasscode(role: Role): string | undefined {
-  return role === "Admin" ? process.env["ADMIN_PASSCODE"] : process.env["SALES_PASSCODE"];
+  if (role === "Admin") return process.env["ADMIN_PASSCODE"];
+  if (role === "Vendor") return process.env["VENDOR_PASSCODE"];
+  return process.env["SALES_PASSCODE"];
 }
 
 export async function readRole(): Promise<Role | null> {
