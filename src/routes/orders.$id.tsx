@@ -3,7 +3,17 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { deleteOrder, getOrder, updateOrder } from "@/lib/orders.functions";
-import { FABRICS, PRODUCT_TYPES, STAGES, type Order, type SizeRow } from "@/lib/session";
+import {
+  FABRICS,
+  PRODUCT_TYPES,
+  STAGES,
+  emptyItem,
+  orderItems,
+  totalUnits,
+  type Order,
+  type OrderItem,
+  type SizeRow,
+} from "@/lib/session";
 
 export const Route = createFileRoute("/orders/$id")({
   head: () => ({
