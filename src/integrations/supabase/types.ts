@@ -26,9 +26,11 @@ export type Database = {
           fabric: string
           id: string
           items: Json
+          mockup_files: Json
           mockup_url: string
           order_no: string
           phone: string
+          print_files: Json
           print_files_url: string
           product_type: string
           sales_notes: string
@@ -49,9 +51,11 @@ export type Database = {
           fabric?: string
           id?: string
           items?: Json
+          mockup_files?: Json
           mockup_url?: string
           order_no?: string
           phone?: string
+          print_files?: Json
           print_files_url?: string
           product_type?: string
           sales_notes?: string
@@ -72,9 +76,11 @@ export type Database = {
           fabric?: string
           id?: string
           items?: Json
+          mockup_files?: Json
           mockup_url?: string
           order_no?: string
           phone?: string
+          print_files?: Json
           print_files_url?: string
           product_type?: string
           sales_notes?: string
