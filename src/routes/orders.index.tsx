@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { StageBadge } from "@/components/StageBadge";
 import { createOrder, listOrders } from "@/lib/orders.functions";
-import { STAGES, totalUnits } from "@/lib/session";
+import { STAGES, orderSpecSummary, orderUnits } from "@/lib/session";
 
 export const Route = createFileRoute("/orders/")({
   head: () => ({
@@ -116,10 +116,10 @@ function OrdersPage() {
                 </span>
                 <span className="hidden min-w-0 md:block">
                   <span className="block truncate text-sm text-primary">
-                    {order.product_type} · {order.fabric}
+                    {orderSpecSummary(order)}
                   </span>
                   <span className="block text-sm text-muted-foreground">
-                    {totalUnits(order.sizes)} units
+                    {orderUnits(order)} units
                   </span>
                 </span>
                 <span className="hidden md:block">

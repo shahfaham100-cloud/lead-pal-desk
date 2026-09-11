@@ -17,18 +17,41 @@ export const STAGES = [
 export type Stage = (typeof STAGES)[number];
 
 export const PRODUCT_TYPES = [
-  "T-Shirt",
-  "Polo",
   "Hoodie",
-  "Hi-Vis Vest",
-  "Work Shirt",
+  "Polo",
+  "T-Shirt",
   "Cap",
   "Jacket",
+  "Vest",
+  "Other",
 ] as const;
 
 export const FABRICS = ["Cotton", "Polyester", "Poly-Cotton", "Fleece", "Ripstop"] as const;
 
 export type SizeRow = { size: string; qty: number };
+
+export type OrderItem = {
+  product_type: string;
+  fabric: string;
+  color: string;
+  sizes: SizeRow[];
+};
+
+export const DEFAULT_SIZES: SizeRow[] = [
+  { size: "S", qty: 0 },
+  { size: "M", qty: 0 },
+  { size: "L", qty: 0 },
+  { size: "XL", qty: 0 },
+];
+
+export function emptyItem(): OrderItem {
+  return {
+    product_type: PRODUCT_TYPES[0],
+    fabric: FABRICS[0],
+    color: "",
+    sizes: DEFAULT_SIZES.map((row) => ({ ...row })),
+  };
+}
 
 export type Order = {
   id: string;
@@ -37,6 +60,7 @@ export type Order = {
   email: string;
   phone: string;
   delivery_address: string;
+  items: OrderItem[];
   product_type: string;
   fabric: string;
   color: string;
@@ -54,5 +78,20 @@ export type Order = {
 };
 
 export function totalUnits(sizes: SizeRow[]): number {
-  return sizes.reduce((sum, row) => sum + (Number(row.qty) || 0), 0);
+  return (sizes ?? []).reduce((sum, row) => sum + (Number(row.qty) || 0), 0);
+}
+
+export function orderItems(order: Pick<Order, "items">): OrderItem[] {
+  return Array.isArray(order.items) ? order.items : [];
+}
+
+export function orderUnits(order: Pick<Order, "items">): number {
+  return orderItems(order).reduce((sum, item) => sum + totalUnits(item.sizes), 0);
+}
+
+export function orderSpecSummary(order: Pick<Order, "items">): string {
+  const items = orderItems(order);
+  if (items.length === 0) return "No products yet";
+  const first = `${items[0]!.product_type} · ${items[0]!.fabric}`;
+  return items.length > 1 ? `${first} +${items.length - 1} more` : first;
 }

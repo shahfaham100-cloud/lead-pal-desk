@@ -1,6 +1,14 @@
 import { createServerFn } from "@tanstack/react-start";
 import { notFound } from "@tanstack/react-router";
-import { STAGES, type Order, type SizeRow } from "./session";
+import {
+  FABRICS,
+  PRODUCT_TYPES,
+  STAGES,
+  emptyItem,
+  type Order,
+  type OrderItem,
+  type SizeRow,
+} from "./session";
 
 const SELECT = "*";
 
@@ -12,6 +20,23 @@ function cleanSizes(value: unknown): SizeRow[] {
       qty: Math.max(0, Math.min(100000, Number((row as SizeRow)?.qty) || 0)),
     }))
     .filter((row) => row.size.length > 0);
+}
+
+function cleanItems(value: unknown): OrderItem[] {
+  if (!Array.isArray(value)) return [];
+  return value.slice(0, 30).map((raw) => {
+    const item = (raw ?? {}) as OrderItem;
+    const type = String(item.product_type ?? "");
+    const fabric = String(item.fabric ?? "");
+    return {
+      product_type: PRODUCT_TYPES.includes(type as (typeof PRODUCT_TYPES)[number])
+        ? type
+        : PRODUCT_TYPES[0],
+      fabric: FABRICS.includes(fabric as (typeof FABRICS)[number]) ? fabric : FABRICS[0],
+      color: String(item.color ?? "").slice(0, 100),
+      sizes: cleanSizes(item.sizes),
+    };
+  });
 }
 
 function text(value: unknown, max = 500): string {
@@ -54,12 +79,7 @@ export const createOrder = createServerFn({ method: "POST" }).handler(async () =
     .from("orders")
     .insert({
       created_by_role: role,
-      sizes: [
-        { size: "S", qty: 0 },
-        { size: "M", qty: 0 },
-        { size: "L", qty: 0 },
-        { size: "XL", qty: 0 },
-      ],
+      items: [emptyItem()],
     })
     .select(SELECT)
     .single();
@@ -95,6 +115,7 @@ export const updateOrder = createServerFn({ method: "POST" })
     }
     if ("delivery_address" in p) patch["delivery_address"] = text(p.delivery_address, 1000);
     if ("sizes" in p) patch["sizes"] = cleanSizes(p.sizes);
+    if ("items" in p) patch["items"] = cleanItems(p.items);
     if ("stage" in p) {
       const stage = String(p.stage);
       if (!STAGES.includes(stage as (typeof STAGES)[number])) throw new Error("Unknown stage");

@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { AppHeader } from "@/components/AppHeader";
 import { StageBadge } from "@/components/StageBadge";
-import { STAGES, totalUnits, type Order } from "@/lib/session";
+import { STAGES, orderUnits, type Order } from "@/lib/session";
 
 const getAdminOverview = createServerFn({ method: "GET" }).handler(async () => {
   const { requireRole } = await import("@/lib/auth.server");
@@ -36,7 +36,7 @@ export const Route = createFileRoute("/admin")({
 
 function AdminPage() {
   const { role, orders } = Route.useLoaderData();
-  const units = orders.reduce((sum, order) => sum + totalUnits(order.sizes), 0);
+  const units = orders.reduce((sum, order) => sum + orderUnits(order), 0);
   const open = orders.filter(
     (order) => order.stage !== "Delivered" && order.stage !== "Cancelled",
   ).length;
@@ -95,7 +95,7 @@ function AdminPage() {
                     {order.customer_name || "Unnamed customer"}
                   </span>
                   <span className="hidden text-sm text-muted-foreground sm:inline">
-                    {totalUnits(order.sizes)} units
+                    {orderUnits(order)} units
                   </span>
                   <StageBadge stage={order.stage} />
                 </Link>
