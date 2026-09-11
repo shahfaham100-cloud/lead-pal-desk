@@ -1,0 +1,324 @@
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { useState } from "react";
+import { AppHeader } from "@/components/AppHeader";
+import { deleteOrder, getOrder, updateOrder } from "@/lib/orders.functions";
+import { FABRICS, PRODUCT_TYPES, STAGES, type Order, type SizeRow } from "@/lib/session";
+
+export const Route = createFileRoute("/orders/$id")({
+  head: () => ({
+    meta: [
+      { title: "Order details — Workwear Ops" },
+      { name: "description", content: "Customer, product spec, files and notes for this order." },
+      { property: "og:title", content: "Order details — Workwear Ops" },
+      {
+        property: "og:description",
+        content: "Customer, product spec, files and notes for this order.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  loader: ({ params }) => getOrder({ data: { id: params.id } }),
+  component: OrderDetailPage,
+});
+
+const inputClass =
+  "w-full rounded-md border border-input bg-card px-3 py-2 text-sm outline-none focus:border-primary";
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <label className="block">
+      <span className="label-caps mb-1.5 block">{label}</span>
+      {children}
+    </label>
+  );
+}
+
+function Panel({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="panel p-6">
+      <h2 className="label-caps border-b border-border pb-3">{title}</h2>
+      <div className="mt-4 space-y-4">{children}</div>
+    </section>
+  );
+}
+
+function OrderDetailPage() {
+  const { role, order: initial } = Route.useLoaderData();
+  const router = useRouter();
+  const save = useServerFn(updateOrder);
+  const remove = useServerFn(deleteOrder);
+  const [form, setForm] = useState<Order>(initial);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  function set<K extends keyof Order>(key: K, value: Order[K]) {
+    setForm((current) => ({ ...current, [key]: value }));
+    setSaved(false);
+  }
+
+  function setSize(index: number, patch: Partial<SizeRow>) {
+    set(
+      "sizes",
+      form.sizes.map((row, i) => (i === index ? { ...row, ...patch } : row)),
+    );
+  }
+
+  async function onSave() {
+    setSaving(true);
+    const { order } = await save({
+      data: {
+        id: form.id,
+        patch: {
+          customer_name: form.customer_name,
+          email: form.email,
+          phone: form.phone,
+          delivery_address: form.delivery_address,
+          product_type: form.product_type,
+          fabric: form.fabric,
+          color: form.color,
+          sizes: form.sizes,
+          mockup_url: form.mockup_url,
+          print_files_url: form.print_files_url,
+          tracking_number: form.tracking_number,
+          stage: form.stage,
+          sales_notes: form.sales_notes,
+          designer_notes: form.designer_notes,
+          vendor_notes: form.vendor_notes,
+        },
+      },
+    });
+    setForm(order);
+    setSaving(false);
+    setSaved(true);
+    router.invalidate();
+  }
+
+  async function onDelete() {
+    if (!confirm(`Delete ${form.order_no}? This can't be undone.`)) return;
+    await remove({ data: { id: form.id } });
+    router.navigate({ to: "/orders" });
+  }
+
+  return (
+    <div className="min-h-screen">
+      <AppHeader role={role} />
+      <main className="mx-auto max-w-6xl px-6 py-8">
+        <Link to="/orders" className="text-sm text-muted-foreground hover:text-foreground">
+          ← Back to orders
+        </Link>
+
+        <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h1 className="font-mono text-2xl font-bold">{form.order_no}</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Created {new Date(form.created_at).toLocaleDateString()} · {form.created_by_role}
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="label-caps">Stage</span>
+            <select
+              value={form.stage}
+              onChange={(event) => set("stage", event.target.value)}
+              className="rounded-md border border-input bg-card px-3 py-2 text-sm font-semibold outline-none focus:border-primary"
+            >
+              {STAGES.map((stage) => (
+                <option key={stage} value={stage}>
+                  {stage}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="mt-6 grid gap-6 lg:grid-cols-2">
+          <Panel title="Customer & delivery">
+            <Field label="Customer name">
+              <input
+                className={inputClass}
+                value={form.customer_name}
+                onChange={(event) => set("customer_name", event.target.value)}
+              />
+            </Field>
+            <Field label="Email">
+              <input
+                type="email"
+                className={inputClass}
+                value={form.email}
+                onChange={(event) => set("email", event.target.value)}
+              />
+            </Field>
+            <Field label="Phone">
+              <input
+                className={inputClass}
+                value={form.phone}
+                onChange={(event) => set("phone", event.target.value)}
+              />
+            </Field>
+            <Field label="Delivery address">
+              <textarea
+                rows={3}
+                className={inputClass}
+                value={form.delivery_address}
+                onChange={(event) => set("delivery_address", event.target.value)}
+              />
+            </Field>
+          </Panel>
+
+          <Panel title="Product spec">
+            <Field label="Product type">
+              <select
+                className={inputClass}
+                value={form.product_type}
+                onChange={(event) => set("product_type", event.target.value)}
+              >
+                {PRODUCT_TYPES.map((type) => (
+                  <option key={type}>{type}</option>
+                ))}
+              </select>
+            </Field>
+            <Field label="Fabric">
+              <select
+                className={inputClass}
+                value={form.fabric}
+                onChange={(event) => set("fabric", event.target.value)}
+              >
+                {FABRICS.map((fabric) => (
+                  <option key={fabric}>{fabric}</option>
+                ))}
+              </select>
+            </Field>
+            <Field label="Color">
+              <input
+                className={inputClass}
+                value={form.color}
+                onChange={(event) => set("color", event.target.value)}
+              />
+            </Field>
+            <div>
+              <span className="label-caps mb-1.5 block">Sizing & quantities</span>
+              <div className="space-y-2">
+                {form.sizes.map((row, index) => (
+                  <div key={index} className="flex gap-2">
+                    <input
+                      className={inputClass}
+                      value={row.size}
+                      placeholder="Size"
+                      onChange={(event) => setSize(index, { size: event.target.value })}
+                    />
+                    <input
+                      type="number"
+                      min={0}
+                      className="w-28 rounded-md border border-input bg-card px-3 py-2 text-sm outline-none focus:border-primary"
+                      value={row.qty}
+                      onChange={(event) => setSize(index, { qty: Number(event.target.value) })}
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        set(
+                          "sizes",
+                          form.sizes.filter((_, i) => i !== index),
+                        )
+                      }
+                      className="rounded-md border border-input px-3 text-sm text-destructive hover:bg-destructive/10"
+                      aria-label={`Remove size ${row.size}`}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() => set("sizes", [...form.sizes, { size: "", qty: 0 }])}
+                className="mt-3 rounded-md border border-input px-3 py-1.5 text-sm hover:bg-secondary"
+              >
+                + Add size
+              </button>
+            </div>
+          </Panel>
+
+          <Panel title="Files">
+            <Field label="Approved design (mockup)">
+              <input
+                className={inputClass}
+                placeholder="https://…"
+                value={form.mockup_url}
+                onChange={(event) => set("mockup_url", event.target.value)}
+              />
+            </Field>
+            <Field label="Final print-ready files">
+              <input
+                className={inputClass}
+                placeholder="https://…"
+                value={form.print_files_url}
+                onChange={(event) => set("print_files_url", event.target.value)}
+              />
+            </Field>
+          </Panel>
+
+          <Panel title="Shipping">
+            <Field label="Tracking number">
+              <input
+                className={inputClass}
+                placeholder="Not added"
+                value={form.tracking_number}
+                onChange={(event) => set("tracking_number", event.target.value)}
+              />
+            </Field>
+          </Panel>
+        </div>
+
+        <div className="mt-6">
+          <Panel title="Notes">
+            <div className="grid gap-4 lg:grid-cols-2">
+              <Field label="Sales notes">
+                <textarea
+                  rows={4}
+                  className={inputClass}
+                  placeholder="Placement, print method, artwork tweaks…"
+                  value={form.sales_notes}
+                  onChange={(event) => set("sales_notes", event.target.value)}
+                />
+              </Field>
+              <Field label="Production notes">
+                <textarea
+                  rows={4}
+                  className={inputClass}
+                  placeholder="Production or vendor updates…"
+                  value={form.vendor_notes}
+                  onChange={(event) => set("vendor_notes", event.target.value)}
+                />
+              </Field>
+            </div>
+          </Panel>
+        </div>
+
+        <div className="mt-6 flex items-center justify-between gap-4">
+          <div>
+            {role === "Admin" && (
+              <button
+                onClick={onDelete}
+                className="rounded-md border border-destructive/40 px-4 py-2 text-sm font-semibold text-destructive hover:bg-destructive/10"
+              >
+                Delete order
+              </button>
+            )}
+          </div>
+          <div className="flex items-center gap-3">
+            {saved && <span className="text-sm text-primary">Saved</span>}
+            <button
+              onClick={onSave}
+              disabled={saving}
+              className="rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
+            >
+              {saving ? "Saving…" : "Save changes"}
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
