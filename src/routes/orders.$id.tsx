@@ -59,20 +59,30 @@ function OrderDetailPage() {
   const router = useRouter();
   const save = useServerFn(updateOrder);
   const remove = useServerFn(deleteOrder);
-  const [form, setForm] = useState<Order>(initial);
+  const [form, setForm] = useState<Order>({ ...initial, items: orderItems(initial) });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const items = form.items;
 
   function set<K extends keyof Order>(key: K, value: Order[K]) {
     setForm((current) => ({ ...current, [key]: value }));
     setSaved(false);
   }
 
-  function setSize(index: number, patch: Partial<SizeRow>) {
-    set(
-      "sizes",
-      form.sizes.map((row, i) => (i === index ? { ...row, ...patch } : row)),
-    );
+  function setItems(next: OrderItem[]) {
+    set("items", next);
+  }
+
+  function setItem(index: number, patch: Partial<OrderItem>) {
+    setItems(items.map((item, i) => (i === index ? { ...item, ...patch } : item)));
+  }
+
+  function setSize(itemIndex: number, sizeIndex: number, patch: Partial<SizeRow>) {
+    const item = items[itemIndex];
+    if (!item) return;
+    setItem(itemIndex, {
+      sizes: item.sizes.map((row, i) => (i === sizeIndex ? { ...row, ...patch } : row)),
+    });
   }
 
   async function onSave() {
@@ -85,10 +95,7 @@ function OrderDetailPage() {
           email: form.email,
           phone: form.phone,
           delivery_address: form.delivery_address,
-          product_type: form.product_type,
-          fabric: form.fabric,
-          color: form.color,
-          sizes: form.sizes,
+          items: form.items,
           mockup_url: form.mockup_url,
           print_files_url: form.print_files_url,
           tracking_number: form.tracking_number,
@@ -99,6 +106,7 @@ function OrderDetailPage() {
         },
       },
     });
+
     setForm(order);
     setSaving(false);
     setSaved(true);
