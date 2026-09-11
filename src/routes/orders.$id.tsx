@@ -336,7 +336,6 @@ function OrderDetailPage() {
           </button>
         </section>
 
-
         <div className="mt-6">
           <Panel title="Notes">
             <div className="grid gap-4 lg:grid-cols-2">
