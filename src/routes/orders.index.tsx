@@ -20,6 +20,10 @@ export const Route = createFileRoute("/orders/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
+  beforeLoad: async () => {
+    const { role } = await getCurrentRole();
+    if (!role) throw redirect({ to: "/" });
+  },
   loader: () => listOrders(),
   component: OrdersPage,
 });
