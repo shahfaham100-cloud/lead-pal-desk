@@ -102,7 +102,7 @@ export const updateOrder = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: row, error } = await supabaseAdmin
       .from("orders")
-      .update(patch)
+      .update(patch as never)
       .eq("id", String(data.id))
       .select(SELECT)
       .single();
