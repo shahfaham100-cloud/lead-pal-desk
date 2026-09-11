@@ -80,12 +80,7 @@ export const createOrder = createServerFn({ method: "POST" }).handler(async () =
     .from("orders")
     .insert({
       created_by_role: role,
-      sizes: [
-        { size: "S", qty: 0 },
-        { size: "M", qty: 0 },
-        { size: "L", qty: 0 },
-        { size: "XL", qty: 0 },
-      ],
+      items: [emptyItem()],
     })
     .select(SELECT)
     .single();
@@ -121,6 +116,7 @@ export const updateOrder = createServerFn({ method: "POST" })
     }
     if ("delivery_address" in p) patch["delivery_address"] = text(p.delivery_address, 1000);
     if ("sizes" in p) patch["sizes"] = cleanSizes(p.sizes);
+    if ("items" in p) patch["items"] = cleanItems(p.items);
     if ("stage" in p) {
       const stage = String(p.stage);
       if (!STAGES.includes(stage as (typeof STAGES)[number])) throw new Error("Unknown stage");
