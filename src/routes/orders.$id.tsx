@@ -338,16 +338,18 @@ function OrderDetailPage() {
               />
             </Panel>
 
-            <Panel title="Shipping">
-              <Field label="Tracking number">
-                <input
-                  className={inputClass}
-                  placeholder="Not added"
-                  value={form.tracking_number}
-                  onChange={(event) => set("tracking_number", event.target.value)}
-                />
-              </Field>
-            </Panel>
+            {role !== "Sales Agent" && (
+              <Panel title="Shipping">
+                <Field label="Tracking number">
+                  <input
+                    className={inputClass}
+                    placeholder="Not added"
+                    value={form.tracking_number}
+                    onChange={(event) => set("tracking_number", event.target.value)}
+                  />
+                </Field>
+              </Panel>
+            )}
           </div>
         </div>
 

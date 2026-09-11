@@ -114,13 +114,15 @@ export const updateOrder = createServerFn({ method: "POST" })
         "color",
         "mockup_url",
         "print_files_url",
-        "tracking_number",
         "sales_notes",
         "designer_notes",
         "vendor_notes",
       ] as const;
       for (const field of textFields) {
         if (field in p) patch[field] = text(p[field], field.endsWith("notes") ? 4000 : 500);
+      }
+      if (role === "Admin" && "tracking_number" in p) {
+        patch["tracking_number"] = text(p.tracking_number);
       }
       if ("delivery_address" in p) patch["delivery_address"] = text(p.delivery_address, 1000);
       for (const field of ["mockup_files", "print_files"] as const) {
