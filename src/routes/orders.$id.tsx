@@ -166,110 +166,158 @@ function OrderDetailPage() {
             </Field>
           </Panel>
 
-          <Panel title="Product spec">
-            <Field label="Product type">
-              <select
-                className={inputClass}
-                value={form.product_type}
-                onChange={(event) => set("product_type", event.target.value)}
-              >
-                {PRODUCT_TYPES.map((type) => (
-                  <option key={type}>{type}</option>
-                ))}
-              </select>
-            </Field>
-            <Field label="Fabric">
-              <select
-                className={inputClass}
-                value={form.fabric}
-                onChange={(event) => set("fabric", event.target.value)}
-              >
-                {FABRICS.map((fabric) => (
-                  <option key={fabric}>{fabric}</option>
-                ))}
-              </select>
-            </Field>
-            <Field label="Color">
-              <input
-                className={inputClass}
-                value={form.color}
-                onChange={(event) => set("color", event.target.value)}
-              />
-            </Field>
-            <div>
-              <span className="label-caps mb-1.5 block">Sizing & quantities</span>
-              <div className="space-y-2">
-                {form.sizes.map((row, index) => (
-                  <div key={index} className="flex gap-2">
+          <div className="grid gap-6">
+            <Panel title="Files">
+              <Field label="Approved design (mockup)">
+                <input
+                  className={inputClass}
+                  placeholder="https://…"
+                  value={form.mockup_url}
+                  onChange={(event) => set("mockup_url", event.target.value)}
+                />
+              </Field>
+              <Field label="Final print-ready files">
+                <input
+                  className={inputClass}
+                  placeholder="https://…"
+                  value={form.print_files_url}
+                  onChange={(event) => set("print_files_url", event.target.value)}
+                />
+              </Field>
+            </Panel>
+
+            <Panel title="Shipping">
+              <Field label="Tracking number">
+                <input
+                  className={inputClass}
+                  placeholder="Not added"
+                  value={form.tracking_number}
+                  onChange={(event) => set("tracking_number", event.target.value)}
+                />
+              </Field>
+            </Panel>
+          </div>
+        </div>
+
+        <section className="panel mt-6 p-6">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
+            <h2 className="label-caps">Products ({items.length})</h2>
+            <span className="text-sm text-muted-foreground">
+              {items.reduce((sum, item) => sum + totalUnits(item.sizes), 0)} units total
+            </span>
+          </div>
+
+          <div className="mt-4 space-y-4">
+            {items.length === 0 && (
+              <p className="text-sm text-muted-foreground">
+                No products yet — add the first one below.
+              </p>
+            )}
+            {items.map((item, index) => (
+              <div key={index} className="rounded-lg border border-border bg-secondary/40 p-5">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="label-caps">Product {index + 1}</span>
+                  <button
+                    type="button"
+                    onClick={() => setItems(items.filter((_, i) => i !== index))}
+                    className="rounded-md border border-input bg-card px-3 py-1.5 text-sm text-destructive hover:bg-destructive/10"
+                  >
+                    Remove product
+                  </button>
+                </div>
+
+                <div className="mt-4 grid gap-4 md:grid-cols-3">
+                  <Field label="Product type">
+                    <select
+                      className={inputClass}
+                      value={item.product_type}
+                      onChange={(event) => setItem(index, { product_type: event.target.value })}
+                    >
+                      {PRODUCT_TYPES.map((type) => (
+                        <option key={type}>{type}</option>
+                      ))}
+                    </select>
+                  </Field>
+                  <Field label="Fabric">
+                    <select
+                      className={inputClass}
+                      value={item.fabric}
+                      onChange={(event) => setItem(index, { fabric: event.target.value })}
+                    >
+                      {FABRICS.map((fabric) => (
+                        <option key={fabric}>{fabric}</option>
+                      ))}
+                    </select>
+                  </Field>
+                  <Field label="Color">
                     <input
                       className={inputClass}
-                      value={row.size}
-                      placeholder="Size"
-                      onChange={(event) => setSize(index, { size: event.target.value })}
+                      value={item.color}
+                      onChange={(event) => setItem(index, { color: event.target.value })}
                     />
-                    <input
-                      type="number"
-                      min={0}
-                      className="w-28 rounded-md border border-input bg-card px-3 py-2 text-sm outline-none focus:border-primary"
-                      value={row.qty}
-                      onChange={(event) => setSize(index, { qty: Number(event.target.value) })}
-                    />
-                    <button
-                      type="button"
-                      onClick={() =>
-                        set(
-                          "sizes",
-                          form.sizes.filter((_, i) => i !== index),
-                        )
-                      }
-                      className="rounded-md border border-input px-3 text-sm text-destructive hover:bg-destructive/10"
-                      aria-label={`Remove size ${row.size}`}
-                    >
-                      ✕
-                    </button>
+                  </Field>
+                </div>
+
+                <div className="mt-4">
+                  <span className="label-caps mb-1.5 block">
+                    Sizing & quantities · {totalUnits(item.sizes)} units
+                  </span>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {item.sizes.map((row, sizeIndex) => (
+                      <div key={sizeIndex} className="flex gap-2">
+                        <input
+                          className={inputClass}
+                          value={row.size}
+                          placeholder="Size"
+                          onChange={(event) =>
+                            setSize(index, sizeIndex, { size: event.target.value })
+                          }
+                        />
+                        <input
+                          type="number"
+                          min={0}
+                          className="w-24 rounded-md border border-input bg-card px-3 py-2 text-sm outline-none focus:border-primary"
+                          value={row.qty}
+                          onChange={(event) =>
+                            setSize(index, sizeIndex, { qty: Number(event.target.value) })
+                          }
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setItem(index, {
+                              sizes: item.sizes.filter((_, i) => i !== sizeIndex),
+                            })
+                          }
+                          className="rounded-md border border-input bg-card px-3 text-sm text-destructive hover:bg-destructive/10"
+                          aria-label={`Remove size ${row.size}`}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                  <button
+                    type="button"
+                    onClick={() => setItem(index, { sizes: [...item.sizes, { size: "", qty: 0 }] })}
+                    className="mt-3 rounded-md border border-input bg-card px-3 py-1.5 text-sm hover:bg-secondary"
+                  >
+                    + Add size
+                  </button>
+                </div>
               </div>
-              <button
-                type="button"
-                onClick={() => set("sizes", [...form.sizes, { size: "", qty: 0 }])}
-                className="mt-3 rounded-md border border-input px-3 py-1.5 text-sm hover:bg-secondary"
-              >
-                + Add size
-              </button>
-            </div>
-          </Panel>
+            ))}
+          </div>
 
-          <Panel title="Files">
-            <Field label="Approved design (mockup)">
-              <input
-                className={inputClass}
-                placeholder="https://…"
-                value={form.mockup_url}
-                onChange={(event) => set("mockup_url", event.target.value)}
-              />
-            </Field>
-            <Field label="Final print-ready files">
-              <input
-                className={inputClass}
-                placeholder="https://…"
-                value={form.print_files_url}
-                onChange={(event) => set("print_files_url", event.target.value)}
-              />
-            </Field>
-          </Panel>
+          <button
+            type="button"
+            onClick={() => setItems([...items, emptyItem()])}
+            className="mt-4 rounded-md border border-primary/40 px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/10"
+          >
+            + Add product
+          </button>
+        </section>
 
-          <Panel title="Shipping">
-            <Field label="Tracking number">
-              <input
-                className={inputClass}
-                placeholder="Not added"
-                value={form.tracking_number}
-                onChange={(event) => set("tracking_number", event.target.value)}
-              />
-            </Field>
-          </Panel>
-        </div>
 
         <div className="mt-6">
           <Panel title="Notes">
