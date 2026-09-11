@@ -3,14 +3,18 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { deleteOrder, getOrder, updateOrder } from "@/lib/orders.functions";
+import { createUploadUrl, getFileUrl, removeFile } from "@/lib/files.functions";
+import { supabase } from "@/integrations/supabase/client";
 import {
   FABRICS,
   PRODUCT_TYPES,
   STAGES,
   emptyItem,
+  fileList,
   orderItems,
   totalUnits,
   type Order,
+  type OrderFile,
   type OrderItem,
   type SizeRow,
 } from "@/lib/session";
@@ -54,15 +58,134 @@ function Panel({ title, children }: { title: string; children: React.ReactNode }
   );
 }
 
+function formatSize(bytes: number): string {
+  if (!bytes) return "";
+  const mb = bytes / (1024 * 1024);
+  return mb >= 1 ? `${mb.toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`;
+}
+
+function FileField({
+  label,
+  files,
+  busy,
+  onPick,
+  onOpen,
+  onRemove,
+}: {
+  label: string;
+  files: OrderFile[];
+  busy: boolean;
+  onPick: (files: File[]) => void;
+  onOpen: (path: string) => void;
+  onRemove: (path: string) => void;
+}) {
+  return (
+    <div>
+      <span className="label-caps mb-1.5 block">{label}</span>
+      {files.length > 0 && (
+        <ul className="mb-2 space-y-1.5">
+          {files.map((file) => (
+            <li
+              key={file.path}
+              className="flex items-center justify-between gap-3 rounded-md border border-border bg-secondary/40 px-3 py-2 text-sm"
+            >
+              <button
+                type="button"
+                onClick={() => onOpen(file.path)}
+                className="truncate text-left text-primary hover:underline"
+              >
+                {file.name}
+              </button>
+              <div className="flex shrink-0 items-center gap-3">
+                <span className="text-xs text-muted-foreground">{formatSize(file.size)}</span>
+                <button
+                  type="button"
+                  onClick={() => onRemove(file.path)}
+                  className="text-sm text-destructive hover:underline"
+                  aria-label={`Remove ${file.name}`}
+                >
+                  ✕
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+      <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-input bg-card px-3 py-2 text-sm hover:bg-secondary">
+        <input
+          type="file"
+          multiple
+          className="hidden"
+          disabled={busy}
+          onChange={(event) => {
+            const picked = Array.from(event.target.files ?? []);
+            event.target.value = "";
+            if (picked.length > 0) onPick(picked);
+          }}
+        />
+        {busy ? "Uploading…" : files.length > 0 ? "+ Add more files" : "+ Upload files"}
+      </label>
+    </div>
+  );
+}
+
 function OrderDetailPage() {
   const { role, order: initial } = Route.useLoaderData();
   const router = useRouter();
   const save = useServerFn(updateOrder);
   const remove = useServerFn(deleteOrder);
+  const signUpload = useServerFn(createUploadUrl);
+  const signDownload = useServerFn(getFileUrl);
+  const deleteFile = useServerFn(removeFile);
   const [form, setForm] = useState<Order>({ ...initial, items: orderItems(initial) });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [uploading, setUploading] = useState<string | null>(null);
   const items = form.items;
+
+  type FileField = "mockup_files" | "print_files";
+
+  async function persistFiles(field: FileField, list: OrderFile[]) {
+    setForm((current) => ({ ...current, [field]: list }));
+    const { order } = await save({ data: { id: form.id, patch: { [field]: list } } });
+    setForm((current) => ({ ...current, [field]: fileList(order[field]) }));
+    router.invalidate();
+  }
+
+  async function upload(field: FileField, picked: File[]) {
+    setUploading(field);
+    try {
+      const uploaded: OrderFile[] = [];
+      for (const file of picked) {
+        const { path, token } = await signUpload({
+          data: { orderId: form.id, field, fileName: file.name },
+        });
+        const { error } = await supabase.storage
+          .from("order-files")
+          .uploadToSignedUrl(path, token, file);
+        if (error) throw new Error(error.message);
+        uploaded.push({ name: file.name, path, size: file.size });
+      }
+      await persistFiles(field, [...fileList(form[field]), ...uploaded]);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Upload failed");
+    } finally {
+      setUploading(null);
+    }
+  }
+
+  async function openFile(path: string) {
+    const { url } = await signDownload({ data: { path } });
+    window.open(url, "_blank", "noopener");
+  }
+
+  async function removeUploaded(field: FileField, path: string) {
+    await deleteFile({ data: { path } });
+    await persistFiles(
+      field,
+      fileList(form[field]).filter((file) => file.path !== path),
+    );
+  }
 
   function set<K extends keyof Order>(key: K, value: Order[K]) {
     setForm((current) => ({ ...current, [key]: value }));
@@ -186,22 +309,22 @@ function OrderDetailPage() {
 
           <div className="grid gap-6">
             <Panel title="Files">
-              <Field label="Approved design (mockup)">
-                <input
-                  className={inputClass}
-                  placeholder="https://…"
-                  value={form.mockup_url}
-                  onChange={(event) => set("mockup_url", event.target.value)}
-                />
-              </Field>
-              <Field label="Final print-ready files">
-                <input
-                  className={inputClass}
-                  placeholder="https://…"
-                  value={form.print_files_url}
-                  onChange={(event) => set("print_files_url", event.target.value)}
-                />
-              </Field>
+              <FileField
+                label="Approved design (mockup)"
+                files={fileList(form.mockup_files)}
+                busy={uploading === "mockup_files"}
+                onPick={(files) => upload("mockup_files", files)}
+                onOpen={openFile}
+                onRemove={(path) => removeUploaded("mockup_files", path)}
+              />
+              <FileField
+                label="Final print-ready files"
+                files={fileList(form.print_files)}
+                busy={uploading === "print_files"}
+                onPick={(files) => upload("print_files", files)}
+                onOpen={openFile}
+                onRemove={(path) => removeUploaded("print_files", path)}
+              />
             </Panel>
 
             <Panel title="Shipping">

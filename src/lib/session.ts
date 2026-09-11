@@ -67,6 +67,8 @@ export type Order = {
   sizes: SizeRow[];
   mockup_url: string;
   print_files_url: string;
+  mockup_files: OrderFile[];
+  print_files: OrderFile[];
   tracking_number: string;
   stage: string;
   sales_notes: string;
@@ -94,4 +96,10 @@ export function orderSpecSummary(order: Pick<Order, "items">): string {
   if (items.length === 0) return "No products yet";
   const first = `${items[0]!.product_type} · ${items[0]!.fabric}`;
   return items.length > 1 ? `${first} +${items.length - 1} more` : first;
+}
+
+export type OrderFile = { name: string; path: string; size: number };
+
+export function fileList(value: unknown): OrderFile[] {
+  return Array.isArray(value) ? (value as OrderFile[]) : [];
 }
