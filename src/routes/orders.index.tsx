@@ -57,13 +57,17 @@ function OrdersPage() {
       <AppHeader role={role} />
       <main className="mx-auto max-w-6xl px-6 py-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <button
-            onClick={onNewOrder}
-            disabled={busy}
-            className="rounded-md bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
-          >
-            + New order
-          </button>
+          {role !== "Vendor" ? (
+            <button
+              onClick={onNewOrder}
+              disabled={busy}
+              className="rounded-md bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
+            >
+              + New order
+            </button>
+          ) : (
+            <h1 className="text-xl font-bold">Production orders</h1>
+          )}
           <div className="flex flex-wrap gap-3">
             <input
               value={query}

@@ -71,6 +71,7 @@ function FileField({
   onPick,
   onOpen,
   onRemove,
+  editable = true,
 }: {
   label: string;
   files: OrderFile[];
@@ -78,6 +79,7 @@ function FileField({
   onPick: (files: File[]) => void;
   onOpen: (path: string) => void;
   onRemove: (path: string) => void;
+  editable?: boolean;
 }) {
   return (
     <div>
@@ -98,20 +100,22 @@ function FileField({
               </button>
               <div className="flex shrink-0 items-center gap-3">
                 <span className="text-xs text-muted-foreground">{formatSize(file.size)}</span>
-                <button
-                  type="button"
-                  onClick={() => onRemove(file.path)}
-                  className="text-sm text-destructive hover:underline"
-                  aria-label={`Remove ${file.name}`}
-                >
-                  ✕
-                </button>
+                {editable && (
+                  <button
+                    type="button"
+                    onClick={() => onRemove(file.path)}
+                    className="text-sm text-destructive hover:underline"
+                    aria-label={`Remove ${file.name}`}
+                  >
+                    ✕
+                  </button>
+                )}
               </div>
             </li>
           ))}
         </ul>
       )}
-      <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-input bg-card px-3 py-2 text-sm hover:bg-secondary">
+      {editable && <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-input bg-card px-3 py-2 text-sm hover:bg-secondary">
         <input
           type="file"
           multiple
@@ -124,7 +128,7 @@ function FileField({
           }}
         />
         {busy ? "Uploading…" : files.length > 0 ? "+ Add more files" : "+ Upload files"}
-      </label>
+      </label>}
     </div>
   );
 }
@@ -142,6 +146,7 @@ function OrderDetailPage() {
   const [saved, setSaved] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
   const items = form.items;
+  const isVendor = role === "Vendor";
 
   type FileField = "mockup_files" | "print_files";
 
@@ -274,6 +279,7 @@ function OrderDetailPage() {
         </div>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
+          <fieldset disabled={isVendor} className="contents">
           <Panel title="Customer & delivery">
             <Field label="Customer name">
               <input
@@ -306,6 +312,7 @@ function OrderDetailPage() {
               />
             </Field>
           </Panel>
+          </fieldset>
 
           <div className="grid gap-6">
             <Panel title="Files">
@@ -316,6 +323,7 @@ function OrderDetailPage() {
                 onPick={(files) => upload("mockup_files", files)}
                 onOpen={openFile}
                 onRemove={(path) => removeUploaded("mockup_files", path)}
+                editable={!isVendor}
               />
               <FileField
                 label="Final print-ready files"
@@ -324,6 +332,7 @@ function OrderDetailPage() {
                 onPick={(files) => upload("print_files", files)}
                 onOpen={openFile}
                 onRemove={(path) => removeUploaded("print_files", path)}
+                editable={!isVendor}
               />
             </Panel>
 
@@ -340,7 +349,7 @@ function OrderDetailPage() {
           </div>
         </div>
 
-        <section className="panel mt-6 p-6">
+        <fieldset disabled={isVendor} className="panel mt-6 p-6 disabled:opacity-75">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
             <h2 className="label-caps">Products ({items.length})</h2>
             <span className="text-sm text-muted-foreground">
@@ -457,7 +466,7 @@ function OrderDetailPage() {
           >
             + Add product
           </button>
-        </section>
+        </fieldset>
 
         <div className="mt-6">
           <Panel title="Notes">
@@ -469,6 +478,7 @@ function OrderDetailPage() {
                   placeholder="Placement, print method, artwork tweaks…"
                   value={form.sales_notes}
                   onChange={(event) => set("sales_notes", event.target.value)}
+                  disabled={isVendor}
                 />
               </Field>
               <Field label="Production notes">

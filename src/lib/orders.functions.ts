@@ -73,7 +73,7 @@ export const getOrder = createServerFn({ method: "GET" })
 
 export const createOrder = createServerFn({ method: "POST" }).handler(async () => {
   const { requireRole } = await import("./auth.server");
-  const role = await requireRole();
+  const role = await requireRole(["Sales Agent", "Admin"]);
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin
     .from("orders")
@@ -92,9 +92,18 @@ export type OrderPatch = Partial<Omit<Order, "id" | "order_no" | "created_at" | 
 export const updateOrder = createServerFn({ method: "POST" })
   .inputValidator((data: { id: string; patch: OrderPatch }) => data)
   .handler(async ({ data }) => {
-    await (await import("./auth.server")).requireRole();
+    const role = await (await import("./auth.server")).requireRole();
     const p = data.patch ?? {};
     const patch: Record<string, unknown> = {};
+    if (role === "Vendor") {
+      if ("tracking_number" in p) patch["tracking_number"] = text(p.tracking_number);
+      if ("vendor_notes" in p) patch["vendor_notes"] = text(p.vendor_notes, 4000);
+      if ("stage" in p) {
+        const stage = String(p.stage);
+        if (!STAGES.includes(stage as (typeof STAGES)[number])) throw new Error("Unknown stage");
+        patch["stage"] = stage;
+      }
+    } else {
     const textFields = [
       "customer_name",
       "email",
@@ -130,6 +139,7 @@ export const updateOrder = createServerFn({ method: "POST" })
       const stage = String(p.stage);
       if (!STAGES.includes(stage as (typeof STAGES)[number])) throw new Error("Unknown stage");
       patch["stage"] = stage;
+    }
     }
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
