@@ -3,14 +3,18 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { deleteOrder, getOrder, updateOrder } from "@/lib/orders.functions";
+import { createUploadUrl, getFileUrl, removeFile } from "@/lib/files.functions";
+import { supabase } from "@/integrations/supabase/client";
 import {
   FABRICS,
   PRODUCT_TYPES,
   STAGES,
   emptyItem,
+  fileList,
   orderItems,
   totalUnits,
   type Order,
+  type OrderFile,
   type OrderItem,
   type SizeRow,
 } from "@/lib/session";
