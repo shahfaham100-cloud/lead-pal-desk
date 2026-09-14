@@ -336,6 +336,58 @@ function OrderDetailPage() {
                 onRemove={(path) => removeUploaded("print_files", path)}
                 editable={!isVendor}
               />
+
+              <div className="border-t border-border pt-4">
+                <p className="mb-3 text-xs text-muted-foreground">
+                  For large files, paste a Google Drive link instead of uploading.
+                </p>
+                <div className="space-y-4">
+                  <Field label="Google Drive link — mockup">
+                    <div className="flex gap-2">
+                      <input
+                        type="url"
+                        className={inputClass}
+                        placeholder="https://drive.google.com/..."
+                        value={form.mockup_url}
+                        onChange={(event) => set("mockup_url", event.target.value)}
+                        disabled={isVendor}
+                      />
+                      {form.mockup_url && (
+                        <a
+                          href={form.mockup_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="shrink-0 rounded-md border border-input bg-card px-3 py-2 text-sm text-primary hover:bg-secondary"
+                        >
+                          Open
+                        </a>
+                      )}
+                    </div>
+                  </Field>
+                  <Field label="Google Drive link — print-ready files">
+                    <div className="flex gap-2">
+                      <input
+                        type="url"
+                        className={inputClass}
+                        placeholder="https://drive.google.com/..."
+                        value={form.print_files_url}
+                        onChange={(event) => set("print_files_url", event.target.value)}
+                        disabled={isVendor}
+                      />
+                      {form.print_files_url && (
+                        <a
+                          href={form.print_files_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="shrink-0 rounded-md border border-input bg-card px-3 py-2 text-sm text-primary hover:bg-secondary"
+                        >
+                          Open
+                        </a>
+                      )}
+                    </div>
+                  </Field>
+                </div>
+              </div>
             </Panel>
 
             {role !== "Sales Agent" && (
