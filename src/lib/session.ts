@@ -66,8 +66,6 @@ export type Order = {
   fabric: string;
   color: string;
   sizes: SizeRow[];
-  mockup_url: string;
-  print_files_url: string;
   mockup_files: OrderFile[];
   print_files: OrderFile[];
   tracking_number: string;
