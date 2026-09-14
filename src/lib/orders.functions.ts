@@ -112,8 +112,6 @@ export const updateOrder = createServerFn({ method: "POST" })
         "product_type",
         "fabric",
         "color",
-        "mockup_url",
-        "print_files_url",
         "sales_notes",
         "designer_notes",
         "vendor_notes",
