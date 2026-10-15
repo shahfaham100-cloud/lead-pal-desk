@@ -292,6 +292,7 @@ function OrderDetailPage() {
           tracking_number: form.tracking_number,
           stage: form.stage,
           sales_notes: form.sales_notes,
+          sales_agent_name: form.sales_agent_name,
           designer_notes: form.designer_notes,
           vendor_notes: form.vendor_notes,
         },
@@ -344,6 +345,16 @@ function OrderDetailPage() {
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
           <fieldset disabled={isVendor} className="contents">
             <Panel title="Customer & delivery">
+              {role === "Admin" && (
+                <Field label="Sales agent name">
+                  <input
+                    className={inputClass}
+                    placeholder="e.g. Ali"
+                    value={form.sales_agent_name}
+                    onChange={(event) => set("sales_agent_name", event.target.value)}
+                  />
+                </Field>
+              )}
               <Field label="Customer name">
                 <input
                   className={inputClass}
