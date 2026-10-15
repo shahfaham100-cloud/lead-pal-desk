@@ -135,6 +135,9 @@ export const updateOrder = createServerFn({ method: "POST" })
       if (role === "Admin" && "tracking_number" in p) {
         patch["tracking_number"] = text(p.tracking_number);
       }
+      if (role === "Admin" && "sales_agent_name" in p) {
+        patch["sales_agent_name"] = text(p.sales_agent_name, 100);
+      }
       if ("delivery_address" in p) patch["delivery_address"] = text(p.delivery_address, 1000);
       for (const field of ["mockup_files", "print_files"] as const) {
         if (field in p) {
