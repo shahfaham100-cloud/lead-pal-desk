@@ -96,10 +96,11 @@ function OrdersPage() {
         </div>
 
         <div className="panel mt-6 overflow-hidden">
-          <div className="grid grid-cols-[130px_1fr] gap-4 border-b border-border px-6 py-3 md:grid-cols-[130px_1.6fr_1fr_150px]">
+          <div className="grid grid-cols-[130px_1fr] gap-4 border-b border-border px-6 py-3 md:grid-cols-[130px_1.4fr_1fr_130px_130px]">
             <span className="label-caps">Order</span>
             <span className="label-caps">Customer</span>
             <span className="label-caps hidden md:block">Spec</span>
+            <span className="label-caps hidden md:block">Sales agent</span>
             <span className="label-caps hidden md:block">Stage</span>
           </div>
           {visible.length === 0 ? (
