@@ -27,12 +27,17 @@ export const PRODUCT_TYPES = [
   "Other",
 ] as const;
 
+export const SLEEVES = ["Long Sleeves", "Short Sleeves"] as const;
+export type Sleeve = (typeof SLEEVES)[number];
+
 export const FABRICS = ["Cotton", "Polyester", "Poly-Cotton", "Fleece", "Ripstop"] as const;
 
 export type SizeRow = { size: string; qty: number };
 
 export type OrderItem = {
   product_type: string;
+  other_text: string;
+  sleeves: string;
   fabric: string;
   color: string;
   sizes: SizeRow[];
@@ -48,6 +53,8 @@ export const DEFAULT_SIZES: SizeRow[] = [
 export function emptyItem(): OrderItem {
   return {
     product_type: PRODUCT_TYPES[0],
+    other_text: "",
+    sleeves: SLEEVES[0],
     fabric: FABRICS[0],
     color: "",
     sizes: DEFAULT_SIZES.map((row) => ({ ...row })),
@@ -95,8 +102,10 @@ export function orderUnits(order: Pick<Order, "items">): number {
 export function orderSpecSummary(order: Pick<Order, "items">): string {
   const items = orderItems(order);
   if (items.length === 0) return "No products yet";
-  const first = `${items[0]!.product_type} · ${items[0]!.fabric}`;
-  return items.length > 1 ? `${first} +${items.length - 1} more` : first;
+  const first = items[0]!;
+  const type = first.product_type === "Other" && first.other_text ? first.other_text : first.product_type;
+  const label = `${type} · ${first.fabric}`;
+  return items.length > 1 ? `${label} +${items.length - 1} more` : label;
 }
 
 export type OrderFile = { name: string; path: string; size: number };
