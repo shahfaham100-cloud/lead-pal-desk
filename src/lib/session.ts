@@ -27,7 +27,8 @@ export const PRODUCT_TYPES = [
   "Other",
 ] as const;
 
-export const SLEEVES = ["Long Sleeves", "Short Sleeves"] as const;
+export const SLEEVE_PLACEHOLDER = "Select Option";
+export const SLEEVES = [SLEEVE_PLACEHOLDER, "Long Sleeves", "Short Sleeves", "Sleeveless"] as const;
 export type Sleeve = (typeof SLEEVES)[number];
 
 export const FABRICS = ["Cotton", "Polyester", "Poly-Cotton", "Fleece", "Ripstop"] as const;
