@@ -1,0 +1,1 @@
+ALTER TABLE public.orders ADD COLUMN sales_agent_name text NOT NULL DEFAULT '';

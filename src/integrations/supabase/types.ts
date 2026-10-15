@@ -33,6 +33,7 @@ export type Database = {
           print_files: Json
           print_files_url: string
           product_type: string
+          sales_agent_name: string
           sales_notes: string
           sizes: Json
           stage: string
@@ -58,6 +59,7 @@ export type Database = {
           print_files?: Json
           print_files_url?: string
           product_type?: string
+          sales_agent_name?: string
           sales_notes?: string
           sizes?: Json
           stage?: string
@@ -83,6 +85,7 @@ export type Database = {
           print_files?: Json
           print_files_url?: string
           product_type?: string
+          sales_agent_name?: string
           sales_notes?: string
           sizes?: Json
           stage?: string

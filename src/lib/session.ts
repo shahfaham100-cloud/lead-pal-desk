@@ -87,6 +87,7 @@ export type Order = {
   designer_notes: string;
   vendor_notes: string;
   created_by_role: string;
+  sales_agent_name: string;
   created_at: string;
   updated_at: string;
 };
