@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   FABRICS,
   PRODUCT_TYPES,
+  SLEEVES,
   STAGES,
   emptyItem,
   fileList,
@@ -143,7 +144,14 @@ function OrderDetailPage() {
   const signUpload = useServerFn(createUploadUrl);
   const signDownload = useServerFn(getFileUrl);
   const deleteFile = useServerFn(removeFile);
-  const [form, setForm] = useState<Order>({ ...initial, items: orderItems(initial) });
+  const [form, setForm] = useState<Order>({
+    ...initial,
+    items: orderItems(initial).map((item) => ({
+      ...item,
+      sleeves: SLEEVES.includes(item.sleeves as (typeof SLEEVES)[number]) ? item.sleeves : SLEEVES[0],
+      other_text: item.other_text ?? "",
+    })),
+  });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
