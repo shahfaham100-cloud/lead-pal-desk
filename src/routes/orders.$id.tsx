@@ -41,9 +41,17 @@ export const Route = createFileRoute("/orders/$id")({
 const inputClass =
   "w-full rounded-md border border-input bg-card px-3 py-2 text-sm outline-none focus:border-primary";
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({
+  label,
+  className,
+  children,
+}: {
+  label: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
   return (
-    <label className="block">
+    <label className={`block min-w-0 ${className ?? ""}`}>
       <span className="label-caps mb-1.5 block">{label}</span>
       {children}
     </label>
