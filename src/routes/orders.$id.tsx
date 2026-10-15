@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { deleteOrder, getOrder, updateOrder } from "@/lib/orders.functions";
 import { createUploadUrl, getFileUrl, removeFile } from "@/lib/files.functions";
@@ -163,8 +163,20 @@ function OrderDetailPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
+  const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
   const items = form.items;
   const isVendor = role === "Vendor";
+
+  useEffect(() => {
+    for (const item of items) {
+      const path = item.image?.path;
+      if (path && !imageUrls[path]) {
+        signDownload({ data: { path } })
+          .then(({ url }) => setImageUrls((current) => ({ ...current, [path]: url })))
+          .catch(() => {});
+      }
+    }
+  }, [items, imageUrls, signDownload]);
 
   type FileField = "mockup_files" | "print_files";
 
