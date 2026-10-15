@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   FABRICS,
   PRODUCT_TYPES,
+  SLEEVES,
   STAGES,
   emptyItem,
   fileList,
@@ -143,7 +144,14 @@ function OrderDetailPage() {
   const signUpload = useServerFn(createUploadUrl);
   const signDownload = useServerFn(getFileUrl);
   const deleteFile = useServerFn(removeFile);
-  const [form, setForm] = useState<Order>({ ...initial, items: orderItems(initial) });
+  const [form, setForm] = useState<Order>({
+    ...initial,
+    items: orderItems(initial).map((item) => ({
+      ...item,
+      sleeves: SLEEVES.includes(item.sleeves as (typeof SLEEVES)[number]) ? item.sleeves : SLEEVES[0],
+      other_text: item.other_text ?? "",
+    })),
+  });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
@@ -401,7 +409,7 @@ function OrderDetailPage() {
                   </button>
                 </div>
 
-                <div className="mt-4 grid gap-4 md:grid-cols-3">
+                <div className="mt-4 grid gap-4 md:grid-cols-4">
                   <Field label="Product type">
                     <select
                       className={inputClass}
@@ -410,6 +418,27 @@ function OrderDetailPage() {
                     >
                       {PRODUCT_TYPES.map((type) => (
                         <option key={type}>{type}</option>
+                      ))}
+                    </select>
+                  </Field>
+                  {item.product_type === "Other" && (
+                    <Field label="Specify product">
+                      <input
+                        className={inputClass}
+                        placeholder="e.g. Cargo Pants"
+                        value={item.other_text}
+                        onChange={(event) => setItem(index, { other_text: event.target.value })}
+                      />
+                    </Field>
+                  )}
+                  <Field label="Sleeves">
+                    <select
+                      className={inputClass}
+                      value={item.sleeves}
+                      onChange={(event) => setItem(index, { sleeves: event.target.value })}
+                    >
+                      {SLEEVES.map((sleeve) => (
+                        <option key={sleeve}>{sleeve}</option>
                       ))}
                     </select>
                   </Field>
