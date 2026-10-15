@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { deleteOrder, getOrder, updateOrder } from "@/lib/orders.functions";
 import { createUploadUrl, getFileUrl, removeFile } from "@/lib/files.functions";
@@ -163,8 +163,20 @@ function OrderDetailPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
+  const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
   const items = form.items;
   const isVendor = role === "Vendor";
+
+  useEffect(() => {
+    for (const item of items) {
+      const path = item.image?.path;
+      if (path && !imageUrls[path]) {
+        signDownload({ data: { path } })
+          .then(({ url }) => setImageUrls((current) => ({ ...current, [path]: url })))
+          .catch(() => {});
+      }
+    }
+  }, [items, imageUrls, signDownload]);
 
   type FileField = "mockup_files" | "print_files";
 
@@ -208,6 +220,39 @@ function OrderDetailPage() {
       field,
       fileList(form[field]).filter((file) => file.path !== path),
     );
+  }
+
+  async function uploadItemImage(index: number, file: File) {
+    setUploading(`item-${index}`);
+    try {
+      const { path, token } = await signUpload({
+        data: { orderId: form.id, field: "item_images", fileName: file.name },
+      });
+      const { error } = await supabase.storage
+        .from("order-files")
+        .uploadToSignedUrl(path, token, file);
+      if (error) throw new Error(error.message);
+      const image: OrderFile = { name: file.name, path, size: file.size };
+      const next = items.map((item, i) => (i === index ? { ...item, image } : item));
+      setForm((current) => ({ ...current, items: next }));
+      const { order } = await save({ data: { id: form.id, patch: { items: next } } });
+      setForm((current) => ({ ...current, items: orderItems(order) }));
+      const { url } = await signDownload({ data: { path } });
+      setImageUrls((current) => ({ ...current, [path]: url }));
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Upload failed");
+    } finally {
+      setUploading(null);
+    }
+  }
+
+  async function removeItemImage(index: number) {
+    const image = items[index]?.image;
+    if (!image) return;
+    await deleteFile({ data: { path: image.path } });
+    const next = items.map((item, i) => (i === index ? { ...item, image: null } : item));
+    setForm((current) => ({ ...current, items: next }));
+    await save({ data: { id: form.id, patch: { items: next } } });
   }
 
   function set<K extends keyof Order>(key: K, value: Order[K]) {
@@ -468,6 +513,64 @@ function OrderDetailPage() {
                       onChange={(event) => setItem(index, { color: event.target.value })}
                     />
                   </Field>
+                </div>
+
+                <div className="mt-4">
+                  <span className="label-caps mb-1.5 block">Product image</span>
+                  {item.image ? (
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => openFile(item.image!.path)}
+                        className="block h-20 w-20 shrink-0 overflow-hidden rounded-md border border-border bg-card"
+                        aria-label={`Preview ${item.image.name}`}
+                      >
+                        {imageUrls[item.image.path] ? (
+                          <img
+                            src={imageUrls[item.image.path]}
+                            alt={item.image.name}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <span className="flex h-full items-center justify-center text-xs text-muted-foreground">
+                            Loading…
+                          </span>
+                        )}
+                      </button>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm">{item.image.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {formatSize(item.image.size)}
+                        </p>
+                        {!isVendor && (
+                          <button
+                            type="button"
+                            onClick={() => removeItemImage(index)}
+                            className="mt-1 text-sm text-destructive hover:underline"
+                          >
+                            Remove image
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ) : isVendor ? (
+                    <p className="text-sm text-muted-foreground">No image uploaded.</p>
+                  ) : (
+                    <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-input bg-card px-3 py-2 text-sm hover:bg-secondary">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        disabled={uploading === `item-${index}`}
+                        onChange={(event) => {
+                          const file = event.target.files?.[0];
+                          event.target.value = "";
+                          if (file) uploadItemImage(index, file);
+                        }}
+                      />
+                      {uploading === `item-${index}` ? "Uploading…" : "+ Upload image"}
+                    </label>
+                  )}
                 </div>
 
                 <div className="mt-4">

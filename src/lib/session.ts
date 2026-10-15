@@ -34,6 +34,8 @@ export const FABRICS = ["Cotton", "Polyester", "Poly-Cotton", "Fleece", "Ripstop
 
 export type SizeRow = { size: string; qty: number };
 
+export type OrderFile = { name: string; path: string; size: number };
+
 export type OrderItem = {
   product_type: string;
   other_text: string;
@@ -41,6 +43,7 @@ export type OrderItem = {
   fabric: string;
   color: string;
   sizes: SizeRow[];
+  image: OrderFile | null;
 };
 
 export const DEFAULT_SIZES: SizeRow[] = [
@@ -58,6 +61,7 @@ export function emptyItem(): OrderItem {
     fabric: FABRICS[0],
     color: "",
     sizes: DEFAULT_SIZES.map((row) => ({ ...row })),
+    image: null,
   };
 }
 
@@ -107,8 +111,6 @@ export function orderSpecSummary(order: Pick<Order, "items">): string {
   const label = `${type} · ${first.fabric}`;
   return items.length > 1 ? `${label} +${items.length - 1} more` : label;
 }
-
-export type OrderFile = { name: string; path: string; size: number };
 
 export function fileList(value: unknown): OrderFile[] {
   return Array.isArray(value) ? (value as OrderFile[]) : [];

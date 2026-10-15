@@ -11,7 +11,8 @@ export const createUploadUrl = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { requireRole } = await import("./auth.server");
     await requireRole(["Sales Agent", "Admin"]);
-    const field = data.field === "print_files" ? "print_files" : "mockup_files";
+    const allowed = ["mockup_files", "print_files", "item_images"];
+    const field = allowed.includes(data.field) ? data.field : "mockup_files";
     const path = `${String(data.orderId)}/${field}/${Date.now()}-${safeName(data.fileName)}`;
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: signed, error } = await supabaseAdmin.storage
