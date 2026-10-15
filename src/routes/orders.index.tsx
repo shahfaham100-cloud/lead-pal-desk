@@ -96,10 +96,11 @@ function OrdersPage() {
         </div>
 
         <div className="panel mt-6 overflow-hidden">
-          <div className="grid grid-cols-[130px_1fr] gap-4 border-b border-border px-6 py-3 md:grid-cols-[130px_1.6fr_1fr_150px]">
+          <div className="grid grid-cols-[130px_1fr] gap-4 border-b border-border px-6 py-3 md:grid-cols-[130px_1.4fr_1fr_130px_130px]">
             <span className="label-caps">Order</span>
             <span className="label-caps">Customer</span>
             <span className="label-caps hidden md:block">Spec</span>
+            <span className="label-caps hidden md:block">Sales agent</span>
             <span className="label-caps hidden md:block">Stage</span>
           </div>
           {visible.length === 0 ? (
@@ -112,7 +113,7 @@ function OrdersPage() {
                 key={order.id}
                 to="/orders/$id"
                 params={{ id: order.id }}
-                className="grid grid-cols-[130px_1fr] items-center gap-4 border-b border-border px-6 py-4 transition-colors last:border-0 hover:bg-secondary md:grid-cols-[130px_1.6fr_1fr_150px]"
+                className="grid grid-cols-[130px_1fr] items-center gap-4 border-b border-border px-6 py-4 transition-colors last:border-0 hover:bg-secondary md:grid-cols-[130px_1.4fr_1fr_130px_130px]"
               >
                 <span className="font-mono text-sm font-semibold">{order.order_no}</span>
                 <span className="min-w-0">
@@ -130,6 +131,9 @@ function OrdersPage() {
                   <span className="block text-sm text-muted-foreground">
                     {orderUnits(order)} units
                   </span>
+                </span>
+                <span className="hidden truncate text-sm md:block">
+                  {order.sales_agent_name || "—"}
                 </span>
                 <span className="hidden md:block">
                   <StageBadge stage={order.stage} />

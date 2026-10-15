@@ -345,16 +345,20 @@ function OrderDetailPage() {
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
           <fieldset disabled={isVendor} className="contents">
             <Panel title="Customer & delivery">
-              {role === "Admin" && (
-                <Field label="Sales agent name">
+              <Field label="Sales agent name">
+                {role === "Admin" ? (
                   <input
                     className={inputClass}
                     placeholder="e.g. Ali"
                     value={form.sales_agent_name}
                     onChange={(event) => set("sales_agent_name", event.target.value)}
                   />
-                </Field>
-              )}
+                ) : (
+                  <p className="rounded-md border border-border bg-secondary px-3 py-2 text-sm">
+                    {form.sales_agent_name || "—"}
+                  </p>
+                )}
+              </Field>
               <Field label="Customer name">
                 <input
                   className={inputClass}
