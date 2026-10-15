@@ -114,7 +114,16 @@ function OrdersPage() {
                 to="/orders/$id"
                 params={{ id: order.id }}
                 className="grid grid-cols-[130px_1fr] items-center gap-4 border-b border-border px-6 py-4 transition-colors last:border-0 hover:bg-secondary md:grid-cols-[130px_1.4fr_1fr_130px_130px]"
-...
+              >
+                <span className="font-mono text-sm font-semibold">{order.order_no}</span>
+                <span className="min-w-0">
+                  <span className="block truncate font-semibold">
+                    {order.customer_name || "Unnamed customer"}
+                  </span>
+                  <span className="block truncate text-sm text-muted-foreground">
+                    {order.delivery_address || "No delivery address"}
+                  </span>
+                </span>
                 <span className="hidden min-w-0 md:block">
                   <span className="block truncate text-sm text-primary">
                     {orderSpecSummary(order)}
