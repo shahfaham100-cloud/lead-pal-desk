@@ -409,7 +409,7 @@ function OrderDetailPage() {
                   </button>
                 </div>
 
-                <div className="mt-4 grid gap-4 md:grid-cols-3">
+                <div className="mt-4 grid gap-4 md:grid-cols-4">
                   <Field label="Product type">
                     <select
                       className={inputClass}
@@ -418,6 +418,27 @@ function OrderDetailPage() {
                     >
                       {PRODUCT_TYPES.map((type) => (
                         <option key={type}>{type}</option>
+                      ))}
+                    </select>
+                  </Field>
+                  {item.product_type === "Other" && (
+                    <Field label="Specify product">
+                      <input
+                        className={inputClass}
+                        placeholder="e.g. Cargo Pants"
+                        value={item.other_text}
+                        onChange={(event) => setItem(index, { other_text: event.target.value })}
+                      />
+                    </Field>
+                  )}
+                  <Field label="Sleeves">
+                    <select
+                      className={inputClass}
+                      value={item.sleeves}
+                      onChange={(event) => setItem(index, { sleeves: event.target.value })}
+                    >
+                      {SLEEVES.map((sleeve) => (
+                        <option key={sleeve}>{sleeve}</option>
                       ))}
                     </select>
                   </Field>
