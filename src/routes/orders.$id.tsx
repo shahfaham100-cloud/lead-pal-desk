@@ -222,6 +222,39 @@ function OrderDetailPage() {
     );
   }
 
+  async function uploadItemImage(index: number, file: File) {
+    setUploading(`item-${index}`);
+    try {
+      const { path, token } = await signUpload({
+        data: { orderId: form.id, field: "item_images", fileName: file.name },
+      });
+      const { error } = await supabase.storage
+        .from("order-files")
+        .uploadToSignedUrl(path, token, file);
+      if (error) throw new Error(error.message);
+      const image: OrderFile = { name: file.name, path, size: file.size };
+      const next = items.map((item, i) => (i === index ? { ...item, image } : item));
+      setForm((current) => ({ ...current, items: next }));
+      const { order } = await save({ data: { id: form.id, patch: { items: next } } });
+      setForm((current) => ({ ...current, items: orderItems(order) }));
+      const { url } = await signDownload({ data: { path } });
+      setImageUrls((current) => ({ ...current, [path]: url }));
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Upload failed");
+    } finally {
+      setUploading(null);
+    }
+  }
+
+  async function removeItemImage(index: number) {
+    const image = items[index]?.image;
+    if (!image) return;
+    await deleteFile({ data: { path: image.path } });
+    const next = items.map((item, i) => (i === index ? { ...item, image: null } : item));
+    setForm((current) => ({ ...current, items: next }));
+    await save({ data: { id: form.id, patch: { items: next } } });
+  }
+
   function set<K extends keyof Order>(key: K, value: Order[K]) {
     setForm((current) => ({ ...current, [key]: value }));
     setSaved(false);
