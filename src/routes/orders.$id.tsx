@@ -516,6 +516,64 @@ function OrderDetailPage() {
                 </div>
 
                 <div className="mt-4">
+                  <span className="label-caps mb-1.5 block">Product image</span>
+                  {item.image ? (
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => openFile(item.image!.path)}
+                        className="block h-20 w-20 shrink-0 overflow-hidden rounded-md border border-border bg-card"
+                        aria-label={`Preview ${item.image.name}`}
+                      >
+                        {imageUrls[item.image.path] ? (
+                          <img
+                            src={imageUrls[item.image.path]}
+                            alt={item.image.name}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <span className="flex h-full items-center justify-center text-xs text-muted-foreground">
+                            Loading…
+                          </span>
+                        )}
+                      </button>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm">{item.image.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {formatSize(item.image.size)}
+                        </p>
+                        {!isVendor && (
+                          <button
+                            type="button"
+                            onClick={() => removeItemImage(index)}
+                            className="mt-1 text-sm text-destructive hover:underline"
+                          >
+                            Remove image
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ) : isVendor ? (
+                    <p className="text-sm text-muted-foreground">No image uploaded.</p>
+                  ) : (
+                    <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-input bg-card px-3 py-2 text-sm hover:bg-secondary">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        disabled={uploading === `item-${index}`}
+                        onChange={(event) => {
+                          const file = event.target.files?.[0];
+                          event.target.value = "";
+                          if (file) uploadItemImage(index, file);
+                        }}
+                      />
+                      {uploading === `item-${index}` ? "Uploading…" : "+ Upload image"}
+                    </label>
+                  )}
+                </div>
+
+                <div className="mt-4">
                   <span className="label-caps mb-1.5 block">
                     Sizing & quantities · {totalUnits(item.sizes)} units
                   </span>
