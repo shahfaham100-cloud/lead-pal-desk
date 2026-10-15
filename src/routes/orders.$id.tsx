@@ -41,9 +41,17 @@ export const Route = createFileRoute("/orders/$id")({
 const inputClass =
   "w-full rounded-md border border-input bg-card px-3 py-2 text-sm outline-none focus:border-primary";
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({
+  label,
+  className,
+  children,
+}: {
+  label: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
   return (
-    <label className="block">
+    <label className={`block min-w-0 ${className ?? ""}`}>
       <span className="label-caps mb-1.5 block">{label}</span>
       {children}
     </label>
@@ -409,8 +417,8 @@ function OrderDetailPage() {
                   </button>
                 </div>
 
-                <div className="mt-4 grid gap-4 md:grid-cols-4">
-                  <Field label="Product type">
+                <div className="mt-4 flex flex-wrap items-start gap-2.5">
+                  <Field label="Product type" className="grow basis-[120px]">
                     <select
                       className={inputClass}
                       value={item.product_type}
@@ -422,7 +430,7 @@ function OrderDetailPage() {
                     </select>
                   </Field>
                   {item.product_type === "Other" && (
-                    <Field label="Specify product">
+                    <Field label="Specify product" className="grow basis-[150px]">
                       <input
                         className={inputClass}
                         placeholder="e.g. Cargo Pants"
@@ -431,7 +439,7 @@ function OrderDetailPage() {
                       />
                     </Field>
                   )}
-                  <Field label="Sleeves">
+                  <Field label="Sleeves" className="grow basis-[105px]">
                     <select
                       className={inputClass}
                       value={item.sleeves}
@@ -442,7 +450,7 @@ function OrderDetailPage() {
                       ))}
                     </select>
                   </Field>
-                  <Field label="Fabric">
+                  <Field label="Fabric" className="grow basis-[105px]">
                     <select
                       className={inputClass}
                       value={item.fabric}
@@ -453,7 +461,7 @@ function OrderDetailPage() {
                       ))}
                     </select>
                   </Field>
-                  <Field label="Color">
+                  <Field label="Color" className="grow basis-[95px]">
                     <input
                       className={inputClass}
                       value={item.color}
