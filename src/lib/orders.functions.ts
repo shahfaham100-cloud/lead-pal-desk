@@ -3,6 +3,7 @@ import { notFound } from "@tanstack/react-router";
 import {
   FABRICS,
   PRODUCT_TYPES,
+  SLEEVES,
   STAGES,
   emptyItem,
   type Order,
@@ -28,10 +29,13 @@ function cleanItems(value: unknown): OrderItem[] {
     const item = (raw ?? {}) as OrderItem;
     const type = String(item.product_type ?? "");
     const fabric = String(item.fabric ?? "");
+    const sleeves = String(item.sleeves ?? "");
     return {
       product_type: PRODUCT_TYPES.includes(type as (typeof PRODUCT_TYPES)[number])
         ? type
         : PRODUCT_TYPES[0],
+      other_text: String(item.other_text ?? "").slice(0, 100),
+      sleeves: SLEEVES.includes(sleeves as (typeof SLEEVES)[number]) ? sleeves : SLEEVES[0],
       fabric: FABRICS.includes(fabric as (typeof FABRICS)[number]) ? fabric : FABRICS[0],
       color: String(item.color ?? "").slice(0, 100),
       sizes: cleanSizes(item.sizes),
