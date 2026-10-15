@@ -112,8 +112,6 @@ export function orderSpecSummary(order: Pick<Order, "items">): string {
   return items.length > 1 ? `${label} +${items.length - 1} more` : label;
 }
 
-export type OrderFile = { name: string; path: string; size: number };
-
 export function fileList(value: unknown): OrderFile[] {
   return Array.isArray(value) ? (value as OrderFile[]) : [];
 }

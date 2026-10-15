@@ -39,6 +39,13 @@ function cleanItems(value: unknown): OrderItem[] {
       fabric: FABRICS.includes(fabric as (typeof FABRICS)[number]) ? fabric : FABRICS[0],
       color: String(item.color ?? "").slice(0, 100),
       sizes: cleanSizes(item.sizes),
+      image: item.image && typeof item.image === "object" && item.image.path
+        ? {
+            name: String(item.image.name ?? "").slice(0, 200),
+            path: String(item.image.path).slice(0, 400),
+            size: Math.max(0, Number(item.image.size) || 0),
+          }
+        : null,
     };
   });
 }
