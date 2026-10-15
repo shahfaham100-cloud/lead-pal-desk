@@ -80,6 +80,15 @@ function AdminPage() {
 
           <section className="panel overflow-hidden">
             <h2 className="label-caps border-b border-border px-6 py-4">All orders</h2>
+            {orders.length > 0 && (
+              <div className="flex items-center gap-4 border-b border-border bg-secondary/40 px-6 py-2.5 text-muted-foreground">
+                <span className="label-caps w-24 shrink-0">Order</span>
+                <span className="label-caps min-w-0 flex-1">Customer</span>
+                <span className="label-caps hidden w-36 shrink-0 truncate sm:block">Sales agent</span>
+                <span className="label-caps hidden w-16 shrink-0 text-right sm:block">Units</span>
+                <span className="label-caps">Stage</span>
+              </div>
+            )}
             {orders.length === 0 ? (
               <p className="px-6 py-10 text-center text-sm text-muted-foreground">No orders yet.</p>
             ) : (
@@ -88,14 +97,17 @@ function AdminPage() {
                   key={order.id}
                   to="/orders/$id"
                   params={{ id: order.id }}
-                  className="flex items-center justify-between gap-4 border-b border-border px-6 py-4 transition-colors last:border-0 hover:bg-secondary"
+                  className="flex items-center gap-4 border-b border-border px-6 py-4 transition-colors last:border-0 hover:bg-secondary"
                 >
-                  <span className="font-mono text-sm font-semibold">{order.order_no}</span>
+                  <span className="w-24 shrink-0 font-mono text-sm font-semibold">{order.order_no}</span>
                   <span className="min-w-0 flex-1 truncate text-sm">
                     {order.customer_name || "Unnamed customer"}
                   </span>
-                  <span className="hidden text-sm text-muted-foreground sm:inline">
-                    {orderUnits(order)} units
+                  <span className="hidden w-36 shrink-0 truncate text-sm text-muted-foreground sm:block">
+                    {order.sales_agent_name || "—"}
+                  </span>
+                  <span className="hidden w-16 shrink-0 text-right text-sm text-muted-foreground sm:block">
+                    {orderUnits(order)}
                   </span>
                   <StageBadge stage={order.stage} />
                 </Link>
