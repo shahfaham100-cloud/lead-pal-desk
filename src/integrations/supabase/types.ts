@@ -22,6 +22,7 @@ export type Database = {
           customer_name: string
           delivery_address: string
           designer_notes: string
+          dispatch_date: string | null
           email: string
           fabric: string
           id: string
@@ -35,6 +36,7 @@ export type Database = {
           product_type: string
           sales_agent_name: string
           sales_notes: string
+          shipping_company: string
           sizes: Json
           stage: string
           tracking_number: string
@@ -48,6 +50,7 @@ export type Database = {
           customer_name?: string
           delivery_address?: string
           designer_notes?: string
+          dispatch_date?: string | null
           email?: string
           fabric?: string
           id?: string
@@ -61,6 +64,7 @@ export type Database = {
           product_type?: string
           sales_agent_name?: string
           sales_notes?: string
+          shipping_company?: string
           sizes?: Json
           stage?: string
           tracking_number?: string
@@ -74,6 +78,7 @@ export type Database = {
           customer_name?: string
           delivery_address?: string
           designer_notes?: string
+          dispatch_date?: string | null
           email?: string
           fabric?: string
           id?: string
@@ -87,6 +92,7 @@ export type Database = {
           product_type?: string
           sales_agent_name?: string
           sales_notes?: string
+          shipping_company?: string
           sizes?: Json
           stage?: string
           tracking_number?: string

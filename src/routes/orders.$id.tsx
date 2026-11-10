@@ -290,6 +290,8 @@ function OrderDetailPage() {
           mockup_url: form.mockup_url,
           print_files_url: form.print_files_url,
           tracking_number: form.tracking_number,
+          shipping_company: form.shipping_company,
+          dispatch_date: form.dispatch_date,
           stage: form.stage,
           sales_notes: form.sales_notes,
           sales_agent_name: form.sales_agent_name,
@@ -445,6 +447,26 @@ function OrderDetailPage() {
                     onChange={(event) => set("tracking_number", event.target.value)}
                   />
                 </Field>
+                <div className="mt-4">
+                  <Field label="Shipping company name / URL">
+                    <input
+                      className={inputClass}
+                      placeholder="e.g. DHL or https://www.dhl.com"
+                      value={form.shipping_company}
+                      onChange={(event) => set("shipping_company", event.target.value)}
+                    />
+                  </Field>
+                </div>
+                <div className="mt-4">
+                  <Field label="Dispatch / shipping date">
+                    <input
+                      type="date"
+                      className={inputClass}
+                      value={form.dispatch_date ?? ""}
+                      onChange={(event) => set("dispatch_date", event.target.value || null)}
+                    />
+                  </Field>
+                </div>
               </Panel>
             )}
           </div>

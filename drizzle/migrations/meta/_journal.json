@@ -8,6 +8,13 @@
       "when": 1792048961514,
       "tag": "0000_add_sales_agent_name",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794291634055,
+      "tag": "0001_add_shipping_company_and_dispatch_date",
+      "breakpoints": true
     }
   ]
 }

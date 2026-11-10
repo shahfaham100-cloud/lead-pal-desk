@@ -54,6 +54,12 @@ function text(value: unknown, max = 500): string {
   return String(value ?? "").slice(0, max);
 }
 
+function cleanDate(value: unknown): string | null {
+  const raw = String(value ?? "").trim();
+  if (!raw) return null;
+  return /^\d{4}-\d{2}-\d{2}$/.test(raw) ? raw : null;
+}
+
 export const listOrders = createServerFn({ method: "GET" }).handler(async () => {
   const { requireRole } = await import("./auth.server");
   const role = await requireRole();
@@ -108,6 +114,8 @@ export const updateOrder = createServerFn({ method: "POST" })
     const patch: Record<string, unknown> = {};
     if (role === "Vendor") {
       if ("tracking_number" in p) patch["tracking_number"] = text(p.tracking_number);
+      if ("shipping_company" in p) patch["shipping_company"] = text(p.shipping_company, 300);
+      if ("dispatch_date" in p) patch["dispatch_date"] = cleanDate(p.dispatch_date);
       if ("vendor_notes" in p) patch["vendor_notes"] = text(p.vendor_notes, 4000);
       if ("stage" in p) {
         const stage = String(p.stage);
@@ -134,6 +142,12 @@ export const updateOrder = createServerFn({ method: "POST" })
       }
       if (role === "Admin" && "tracking_number" in p) {
         patch["tracking_number"] = text(p.tracking_number);
+      }
+      if (role === "Admin" && "shipping_company" in p) {
+        patch["shipping_company"] = text(p.shipping_company, 300);
+      }
+      if (role === "Admin" && "dispatch_date" in p) {
+        patch["dispatch_date"] = cleanDate(p.dispatch_date);
       }
       if (role === "Admin" && "sales_agent_name" in p) {
         patch["sales_agent_name"] = text(p.sales_agent_name, 100);
