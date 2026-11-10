@@ -83,6 +83,8 @@ export type Order = {
   mockup_files: OrderFile[];
   print_files: OrderFile[];
   tracking_number: string;
+  shipping_company: string;
+  dispatch_date: string | null;
   stage: string;
   sales_notes: string;
   designer_notes: string;

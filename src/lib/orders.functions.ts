@@ -108,6 +108,8 @@ export const updateOrder = createServerFn({ method: "POST" })
     const patch: Record<string, unknown> = {};
     if (role === "Vendor") {
       if ("tracking_number" in p) patch["tracking_number"] = text(p.tracking_number);
+      if ("shipping_company" in p) patch["shipping_company"] = text(p.shipping_company, 300);
+      if ("dispatch_date" in p) patch["dispatch_date"] = cleanDate(p.dispatch_date);
       if ("vendor_notes" in p) patch["vendor_notes"] = text(p.vendor_notes, 4000);
       if ("stage" in p) {
         const stage = String(p.stage);
