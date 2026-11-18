@@ -6,8 +6,13 @@ import { ROLES, type Role } from "./session";
 type GateSession = { role?: Role };
 
 function sessionConfig() {
+  const password = process.env["SESSION_SECRET"];
+  if (!password || password.length < 32) {
+    // Shows by name in hosting logs; the value itself is never logged.
+    throw new Error("SESSION_SECRET is missing or shorter than 32 characters on this server.");
+  }
   return {
-    password: process.env["SESSION_SECRET"]!,
+    password,
     name: "workwear-ops",
     maxAge: 60 * 60 * 24 * 7,
     cookie: (() => {
