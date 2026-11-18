@@ -2,18 +2,19 @@ import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { getCurrentRole, signIn } from "@/lib/auth.functions";
+import logo from "@/assets/dsx-logo.png";
 import { ROLES, ROLE_DESCRIPTIONS, type Role } from "@/lib/session";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Workwear Ops — Custom Workwear Production Tracker" },
+      { title: "DSX Printing Services — Order Portal" },
       {
         name: "description",
         content:
           "Track custom printed workwear orders from design approval to delivery. Sign in as a sales agent or admin.",
       },
-      { property: "og:title", content: "Workwear Ops — Production Tracker" },
+      { property: "og:title", content: "DSX Printing Services — Order Portal" },
       {
         property: "og:description",
         content: "Track custom printed workwear orders from design approval to delivery.",
@@ -55,7 +56,9 @@ function SignInPage() {
   return (
     <main className="flex min-h-screen items-center justify-center px-4 py-12">
       <div className="panel w-full max-w-2xl p-8">
-        <h1 className="text-2xl font-bold">Workwear Ops</h1>
+        <h1>
+          <img src={logo} alt="DSX Printing Services" width={800} height={246} className="h-14 w-auto" />
+        </h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Production tracking for custom printed workwear — design approval to delivery.
         </p>

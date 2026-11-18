@@ -1,6 +1,7 @@
 import { Link, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { signOut } from "@/lib/auth.functions";
+import icon from "@/assets/dsx-icon.png";
 import type { Role } from "@/lib/session";
 
 export function AppHeader({ role }: { role: Role }) {
@@ -11,8 +12,8 @@ export function AppHeader({ role }: { role: Role }) {
     <header className="bg-ink text-ink-foreground">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
         <Link to="/orders" className="flex items-center gap-3">
-          <span className="inline-block size-3 rotate-45 rounded-[2px] bg-primary" />
-          <span className="text-lg font-semibold">Workwear Ops</span>
+          <img src={icon} alt="" width={32} height={32} className="size-8 rounded-md" />
+          <span className="text-lg font-semibold">DSX Printing Services</span>
           <span className="hidden font-mono text-[11px] uppercase tracking-[0.14em] text-ink-foreground/55 sm:inline">
             Production Tracker
           </span>

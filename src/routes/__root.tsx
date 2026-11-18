@@ -78,12 +78,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Workwear Ops — Production Tracker" },
+      { title: "DSX Printing Services — Order Portal" },
       {
         name: "description",
         content: "Production tracking for custom printed workwear, from design approval to delivery.",
       },
-      { property: "og:title", content: "Workwear Ops — Production Tracker" },
+      { property: "og:title", content: "DSX Printing Services — Order Portal" },
       {
         property: "og:description",
         content: "Production tracking for custom printed workwear, from design approval to delivery.",
@@ -97,7 +97,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/favicon.png", type: "image/png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {

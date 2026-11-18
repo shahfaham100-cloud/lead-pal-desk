@@ -10,9 +10,9 @@ import { STAGES, orderSpecSummary, orderUnits } from "@/lib/session";
 export const Route = createFileRoute("/orders/")({
   head: () => ({
     meta: [
-      { title: "Orders — Workwear Ops" },
+      { title: "Orders — DSX Printing Services" },
       { name: "description", content: "All custom workwear orders and their production stage." },
-      { property: "og:title", content: "Orders — Workwear Ops" },
+      { property: "og:title", content: "Orders — DSX Printing Services" },
       {
         property: "og:description",
         content: "All custom workwear orders and their production stage.",

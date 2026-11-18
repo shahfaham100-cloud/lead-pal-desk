@@ -19,9 +19,9 @@ const getAdminOverview = createServerFn({ method: "GET" }).handler(async () => {
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
-      { title: "Admin overview — Workwear Ops" },
+      { title: "Admin overview — DSX Printing Services" },
       { name: "description", content: "Production totals and every order across all stages." },
-      { property: "og:title", content: "Admin overview — Workwear Ops" },
+      { property: "og:title", content: "Admin overview — DSX Printing Services" },
       {
         property: "og:description",
         content: "Production totals and every order across all stages.",

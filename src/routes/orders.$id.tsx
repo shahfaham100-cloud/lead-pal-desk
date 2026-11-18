@@ -23,9 +23,9 @@ import {
 export const Route = createFileRoute("/orders/$id")({
   head: () => ({
     meta: [
-      { title: "Order details — Workwear Ops" },
+      { title: "Order details — DSX Printing Services" },
       { name: "description", content: "Customer, product spec, files and notes for this order." },
-      { property: "og:title", content: "Order details — Workwear Ops" },
+      { property: "og:title", content: "Order details — DSX Printing Services" },
       {
         property: "og:description",
         content: "Customer, product spec, files and notes for this order.",
