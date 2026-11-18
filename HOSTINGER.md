@@ -81,3 +81,18 @@ If startup fails, check Runtime Logs: missing settings appear by name only. Miss
 - [Node.js app and ZIP upload](https://docs.hostinger.com/node.js/creating-an-app)
 - [Build settings and entry files](https://docs.hostinger.com/node.js/build-settings)
 - [Environment variables](https://docs.hostinger.com/node.js/environment-variables)
+## Auto-deploy from GitHub (alternative to ZIP)
+
+In hPanel choose **Node.js web app → Import Git repository**, connect GitHub and pick this repository, branch `main`. Every push (including changes made in Lovable) redeploys automatically.
+
+| Setting | Value |
+| --- | --- |
+| Framework preset | Other (or Nitro if Other is unavailable) |
+| Node.js | 22.x |
+| Root directory | `./` |
+| Package manager | npm |
+| Build command | `npm run build:hostinger` |
+| Output directory | `hostinger-upload` |
+| Entry file | `server.js` |
+
+Add the same environment variables as in step 3. The public browser values come from the repository's `.env` unless you change them there.

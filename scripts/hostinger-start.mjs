@@ -1,4 +1,6 @@
 // Hostinger injects settings at runtime; no secrets belong in the uploaded ZIP.
+// Hostinger's LiteSpeed runner loads this file with require(), so it must not
+// use top-level await; the server is started with a dynamic import() instead.
 const required = [
   "SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY", "SUPABASE_SERVICE_ROLE_KEY",
   "SESSION_SECRET", "SALES_PASSCODE", "VENDOR_PASSCODE", "ADMIN_PASSCODE",
@@ -13,4 +15,7 @@ if ((process.env.SESSION_SECRET?.length ?? 0) < 32) {
 process.env.NODE_ENV = "production";
 process.env.NITRO_HOST = "0.0.0.0";
 // Nitro reads Hostinger's PORT automatically.
-await import("./output/server/index.mjs");
+import("./output/server/index.mjs").catch((error) => {
+  console.error("Failed to start server:", error);
+  process.exit(1);
+});
