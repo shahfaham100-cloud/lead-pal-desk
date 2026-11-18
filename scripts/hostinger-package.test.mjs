@@ -69,3 +69,37 @@ test("startup rejects session secrets shorter than 32 characters", () => {
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /SESSION_SECRET must contain at least 32 characters/);
 });
+
+test("packaged entry starts from an extracted upload directory and preserves Hostinger PORT", async () => {
+  const root = await fixture();
+  try {
+    const start = fileURLToPath(new URL("./hostinger-start.mjs", import.meta.url));
+    await writeFile(join(root, "scripts/hostinger-start.mjs"), await readFile(start));
+    // A stand-in compiled entry verifies packaging/startup, not the app's production build.
+    await writeFile(join(root, ".output/hostinger/server/index.mjs"), `
+      import assert from 'node:assert/strict';
+      assert.equal(process.env.NODE_ENV, 'production');
+      assert.equal(process.env.NITRO_HOST, '0.0.0.0');
+      assert.equal(process.env.PORT, '43217');
+      console.log('packaged entry loaded');
+    `);
+    await packageHostinger(root);
+    const upload = join(root, "hostinger-upload");
+    const env = Object.fromEntries([
+      "SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY", "SUPABASE_SERVICE_ROLE_KEY",
+      "SALES_PASSCODE", "VENDOR_PASSCODE", "ADMIN_PASSCODE",
+    ].map((key) => [key, "test-only-value"]));
+    const result = spawnSync(process.execPath, [join(upload, "server.js")], {
+      cwd: tmpdir(),
+      env: { ...env, SESSION_SECRET: "x".repeat(32), PORT: "43217" },
+      encoding: "utf8",
+    });
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, /packaged entry loaded/);
+    // Execute the exact uploaded package's build check after installation would finish.
+    const check = spawnSync(process.execPath, ["-e", "require('node:fs').accessSync('output/server/index.mjs')"], {
+      cwd: upload, encoding: "utf8",
+    });
+    assert.equal(check.status, 0, check.stderr);
+  } finally { await rm(root, { recursive: true, force: true }); }
+});
