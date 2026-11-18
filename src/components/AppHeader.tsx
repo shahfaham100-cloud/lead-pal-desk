@@ -13,7 +13,7 @@ export function AppHeader({ role }: { role: Role }) {
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
         <Link to="/orders" className="flex items-center gap-3">
           <img src={icon} alt="" width={32} height={32} className="size-8 rounded-md" />
-          <span className="text-lg font-semibold">DSX Printing Services</span>
+          <span className="text-lg font-semibold"><span className="sm:hidden">DSX</span><span className="hidden sm:inline">DSX Printing Services</span></span>
           <span className="hidden font-mono text-[11px] uppercase tracking-[0.14em] text-ink-foreground/55 sm:inline">
             Production Tracker
           </span>
@@ -35,7 +35,7 @@ export function AppHeader({ role }: { role: Role }) {
               await doSignOut({});
               router.navigate({ to: "/", replace: true });
             }}
-            className="rounded-md border border-ink-foreground/25 px-3 py-1.5 text-sm transition-colors hover:bg-ink-foreground/10"
+            className="whitespace-nowrap rounded-md border border-ink-foreground/25 px-3 py-1.5 text-sm transition-colors hover:bg-ink-foreground/10"
           >
             Log out
           </button>
