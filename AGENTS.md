@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep Hostinger builds in a separate Vite configuration using Nitro's node-server preset; the default configuration must continue targeting Lovable.
+- Package only bundled server/public output for Hostinger and validate required runtime settings at startup; credentials must never enter deployment archives.
