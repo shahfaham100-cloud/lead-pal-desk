@@ -15,6 +15,13 @@
       "when": 1794291634055,
       "tag": "0001_add_shipping_company_and_dispatch_date",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795077804533,
+      "tag": "0002_server_token_access",
+      "breakpoints": true
     }
   ]
 }

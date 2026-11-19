@@ -106,7 +106,158 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      dsx_create_order: {
+        Args: { p_items: Json; p_role: string; p_token: string }
+        Returns: {
+          color: string
+          created_at: string
+          created_by_role: string
+          customer_name: string
+          delivery_address: string
+          designer_notes: string
+          dispatch_date: string | null
+          email: string
+          fabric: string
+          id: string
+          items: Json
+          mockup_files: Json
+          mockup_url: string
+          order_no: string
+          phone: string
+          print_files: Json
+          print_files_url: string
+          product_type: string
+          sales_agent_name: string
+          sales_notes: string
+          shipping_company: string
+          sizes: Json
+          stage: string
+          tracking_number: string
+          updated_at: string
+          vendor_notes: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      dsx_delete_order: {
+        Args: { p_id: string; p_token: string }
+        Returns: undefined
+      }
+      dsx_get_order: {
+        Args: { p_id: string; p_token: string }
+        Returns: {
+          color: string
+          created_at: string
+          created_by_role: string
+          customer_name: string
+          delivery_address: string
+          designer_notes: string
+          dispatch_date: string | null
+          email: string
+          fabric: string
+          id: string
+          items: Json
+          mockup_files: Json
+          mockup_url: string
+          order_no: string
+          phone: string
+          print_files: Json
+          print_files_url: string
+          product_type: string
+          sales_agent_name: string
+          sales_notes: string
+          shipping_company: string
+          sizes: Json
+          stage: string
+          tracking_number: string
+          updated_at: string
+          vendor_notes: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "orders"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      dsx_list_orders: {
+        Args: { p_token: string }
+        Returns: {
+          color: string
+          created_at: string
+          created_by_role: string
+          customer_name: string
+          delivery_address: string
+          designer_notes: string
+          dispatch_date: string | null
+          email: string
+          fabric: string
+          id: string
+          items: Json
+          mockup_files: Json
+          mockup_url: string
+          order_no: string
+          phone: string
+          print_files: Json
+          print_files_url: string
+          product_type: string
+          sales_agent_name: string
+          sales_notes: string
+          shipping_company: string
+          sizes: Json
+          stage: string
+          tracking_number: string
+          updated_at: string
+          vendor_notes: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "orders"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      dsx_update_order: {
+        Args: { p_id: string; p_patch: Json; p_token: string }
+        Returns: {
+          color: string
+          created_at: string
+          created_by_role: string
+          customer_name: string
+          delivery_address: string
+          designer_notes: string
+          dispatch_date: string | null
+          email: string
+          fabric: string
+          id: string
+          items: Json
+          mockup_files: Json
+          mockup_url: string
+          order_no: string
+          phone: string
+          print_files: Json
+          print_files_url: string
+          product_type: string
+          sales_agent_name: string
+          sales_notes: string
+          shipping_company: string
+          sizes: Json
+          stage: string
+          tracking_number: string
+          updated_at: string
+          vendor_notes: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
     }
     Enums: {
       [_ in never]: never
