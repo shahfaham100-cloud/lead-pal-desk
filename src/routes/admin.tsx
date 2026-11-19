@@ -7,11 +7,8 @@ import { STAGES, orderUnits, type Order } from "@/lib/session";
 const getAdminOverview = createServerFn({ method: "GET" }).handler(async () => {
   const { requireRole } = await import("@/lib/auth.server");
   const role = await requireRole(["Admin"]);
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data, error } = await supabaseAdmin
-    .from("orders")
-    .select("*")
-    .order("created_at", { ascending: false });
+  const { db, dbToken } = await import("@/lib/db.server");
+  const { data, error } = await db().rpc("dsx_list_orders", { p_token: dbToken() });
   if (error) throw new Error(error.message);
   return { role, orders: (data ?? []) as unknown as Order[] };
 });

@@ -11,8 +11,6 @@ import {
   type SizeRow,
 } from "./session";
 
-const SELECT = "*";
-
 function cleanSizes(value: unknown): SizeRow[] {
   if (!Array.isArray(value)) return [];
   return value
@@ -63,11 +61,8 @@ function cleanDate(value: unknown): string | null {
 export const listOrders = createServerFn({ method: "GET" }).handler(async () => {
   const { requireRole } = await import("./auth.server");
   const role = await requireRole();
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data, error } = await supabaseAdmin
-    .from("orders")
-    .select(SELECT)
-    .order("created_at", { ascending: false });
+  const { db, dbToken } = await import("./db.server");
+  const { data, error } = await db().rpc("dsx_list_orders", { p_token: dbToken() });
   if (error) throw new Error(error.message);
   return { role, orders: (data ?? []) as unknown as Order[] };
 });
@@ -77,12 +72,12 @@ export const getOrder = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     const { requireRole } = await import("./auth.server");
     const role = await requireRole();
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: row, error } = await supabaseAdmin
-      .from("orders")
-      .select(SELECT)
-      .eq("id", data.id)
-      .maybeSingle();
+    const { db, dbToken } = await import("./db.server");
+    const { data: rows, error } = await db().rpc("dsx_get_order", {
+      p_token: dbToken(),
+      p_id: data.id,
+    });
+    const row = rows?.[0];
     if (error) throw new Error(error.message);
     if (!row) throw notFound();
     return { role, order: row as unknown as Order };
@@ -91,15 +86,12 @@ export const getOrder = createServerFn({ method: "GET" })
 export const createOrder = createServerFn({ method: "POST" }).handler(async () => {
   const { requireRole } = await import("./auth.server");
   const role = await requireRole(["Sales Agent", "Admin"]);
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data, error } = await supabaseAdmin
-    .from("orders")
-    .insert({
-      created_by_role: role,
-      items: [emptyItem()],
-    })
-    .select(SELECT)
-    .single();
+  const { db, dbToken } = await import("./db.server");
+  const { data, error } = await db().rpc("dsx_create_order", {
+    p_token: dbToken(),
+    p_role: role,
+    p_items: [emptyItem()] as never,
+  });
   if (error) throw new Error(error.message);
   return { order: data as unknown as Order };
 });
@@ -173,13 +165,12 @@ export const updateOrder = createServerFn({ method: "POST" })
       }
     }
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: row, error } = await supabaseAdmin
-      .from("orders")
-      .update(patch as never)
-      .eq("id", String(data.id))
-      .select(SELECT)
-      .single();
+    const { db, dbToken } = await import("./db.server");
+    const { data: row, error } = await db().rpc("dsx_update_order", {
+      p_token: dbToken(),
+      p_id: String(data.id),
+      p_patch: patch as never,
+    });
     if (error) throw new Error(error.message);
     return { order: row as unknown as Order };
   });
@@ -188,8 +179,8 @@ export const deleteOrder = createServerFn({ method: "POST" })
   .inputValidator((data: { id: string }) => ({ id: String(data.id) }))
   .handler(async ({ data }) => {
     await (await import("./auth.server")).requireRole(["Admin"]);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("orders").delete().eq("id", data.id);
+    const { db, dbToken } = await import("./db.server");
+    const { error } = await db().rpc("dsx_delete_order", { p_token: dbToken(), p_id: data.id });
     if (error) throw new Error(error.message);
     return { ok: true as const };
   });

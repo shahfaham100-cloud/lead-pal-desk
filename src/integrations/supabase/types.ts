@@ -221,6 +221,7 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      dsx_register_token: { Args: { p_token: string }; Returns: boolean }
       dsx_update_order: {
         Args: { p_id: string; p_patch: Json; p_token: string }
         Returns: {

@@ -22,6 +22,13 @@
       "when": 1795077804533,
       "tag": "0002_server_token_access",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1795078750638,
+      "tag": "0003_register_server_token",
+      "breakpoints": true
     }
   ]
 }

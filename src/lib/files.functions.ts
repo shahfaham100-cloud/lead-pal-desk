@@ -14,8 +14,8 @@ export const createUploadUrl = createServerFn({ method: "POST" })
     const allowed = ["mockup_files", "print_files", "item_images"];
     const field = allowed.includes(data.field) ? data.field : "mockup_files";
     const path = `${String(data.orderId)}/${field}/${Date.now()}-${safeName(data.fileName)}`;
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: signed, error } = await supabaseAdmin.storage
+    const { db } = await import("./db.server");
+    const { data: signed, error } = await db().storage
       .from(BUCKET)
       .createSignedUploadUrl(path);
     if (error || !signed) throw new Error(error?.message ?? "Could not start upload");
@@ -27,8 +27,8 @@ export const getFileUrl = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { requireRole } = await import("./auth.server");
     await requireRole();
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: signed, error } = await supabaseAdmin.storage
+    const { db } = await import("./db.server");
+    const { data: signed, error } = await db().storage
       .from(BUCKET)
       .createSignedUrl(data.path, 60 * 10);
     if (error || !signed) throw new Error(error?.message ?? "Could not open file");
@@ -40,7 +40,7 @@ export const removeFile = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { requireRole } = await import("./auth.server");
     await requireRole(["Sales Agent", "Admin"]);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await supabaseAdmin.storage.from(BUCKET).remove([data.path]);
+    const { db } = await import("./db.server");
+    await db().storage.from(BUCKET).remove([data.path]);
     return { ok: true as const };
   });

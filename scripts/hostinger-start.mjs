@@ -2,7 +2,7 @@
 // Hostinger's LiteSpeed runner loads this file with require(), so it must not
 // use top-level await; the server is started with a dynamic import() instead.
 const required = [
-  "SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY", "SUPABASE_SERVICE_ROLE_KEY",
+  "SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY", "DB_ACCESS_TOKEN",
   "SESSION_SECRET", "SALES_PASSCODE", "VENDOR_PASSCODE", "ADMIN_PASSCODE",
 ];
 const missing = required.filter((name) => !process.env[name]?.trim());

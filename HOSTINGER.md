@@ -1,10 +1,8 @@
 # Workwear Ops on Hostinger Node.js
 
-## Backend requirement — read first
+## Backend
 
-This packages the website and secure server code, not the database, orders or uploaded files. **Lovable Cloud's private server key is not exportable.** This app needs a private server key for order reads/writes and signed file links, so its current Cloud settings cannot simply be copied to Hostinger.
-
-For independent deployment, arrange a separately managed compatible backend with its own URL, publishable key and private service-role key. Migrate the database schema/data and private `order-files` bucket contents first. Preserve order IDs, file paths and the order-number sequence. Files in `drizzle/migrations` are migration history, not a guaranteed complete backend export. Do not make orders publicly accessible to bypass missing credentials. Backend migration is not included in this packaging change.
+The Hostinger site uses the same Lovable Cloud database and files as the Lovable site. No private backend key is needed: the server proves itself with `DB_ACCESS_TOKEN`, the same value saved in Lovable's secrets.
 
 ## 1. Build locally
 
@@ -59,9 +57,9 @@ Enter these in Hostinger **Environment variables**, not your ZIP:
 
 | Variable | Value |
 | --- | --- |
-| `SUPABASE_URL` | Your separately managed backend URL |
-| `SUPABASE_PUBLISHABLE_KEY` | Its publishable key |
-| `SUPABASE_SERVICE_ROLE_KEY` | Its private server key — unavailable from Lovable Cloud |
+| `SUPABASE_URL` | Same as `VITE_SUPABASE_URL` in the repository's `.env` |
+| `SUPABASE_PUBLISHABLE_KEY` | Same as `VITE_SUPABASE_PUBLISHABLE_KEY` in `.env` |
+| `DB_ACCESS_TOKEN` | The exact access code you saved in Lovable |
 | `SESSION_SECRET` | Random secret, at least 32 characters |
 | `SALES_PASSCODE` | Shared Sales Agent passcode |
 | `VENDOR_PASSCODE` | Shared Vendor passcode |

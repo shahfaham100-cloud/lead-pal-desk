@@ -56,13 +56,13 @@ test("startup requires all backend and role settings", () => {
   const start = fileURLToPath(new URL("./hostinger-start.mjs", import.meta.url));
   const result = spawnSync(process.execPath, [start], { env: {}, encoding: "utf8" });
   assert.notEqual(result.status, 0);
-  assert.match(result.stderr, /Missing runtime settings: SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, SUPABASE_SERVICE_ROLE_KEY, SESSION_SECRET, SALES_PASSCODE, VENDOR_PASSCODE, ADMIN_PASSCODE/);
+  assert.match(result.stderr, /Missing runtime settings: SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, DB_ACCESS_TOKEN, SESSION_SECRET, SALES_PASSCODE, VENDOR_PASSCODE, ADMIN_PASSCODE/);
 });
 
 test("startup rejects session secrets shorter than 32 characters", () => {
   const start = fileURLToPath(new URL("./hostinger-start.mjs", import.meta.url));
   const env = Object.fromEntries([
-    "SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY", "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY", "DB_ACCESS_TOKEN",
     "SESSION_SECRET", "SALES_PASSCODE", "VENDOR_PASSCODE", "ADMIN_PASSCODE",
   ].map((key) => [key, "test-only-value"]));
   const result = spawnSync(process.execPath, [start], { env, encoding: "utf8" });
@@ -86,7 +86,7 @@ test("packaged entry starts from an extracted upload directory and preserves Hos
     await packageHostinger(root);
     const upload = join(root, "hostinger-upload");
     const env = Object.fromEntries([
-      "SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY", "SUPABASE_SERVICE_ROLE_KEY",
+      "SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY", "DB_ACCESS_TOKEN",
       "SALES_PASSCODE", "VENDOR_PASSCODE", "ADMIN_PASSCODE",
     ].map((key) => [key, "test-only-value"]));
     const result = spawnSync(process.execPath, [join(upload, "server.js")], {
