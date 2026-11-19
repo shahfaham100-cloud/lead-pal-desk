@@ -24,6 +24,7 @@ export function db() {
           headers.delete("Authorization");
         }
         headers.set("apikey", key);
+        headers.set("x-dsx-token", dbToken());
         return fetch(input, { ...init, headers });
       },
     },

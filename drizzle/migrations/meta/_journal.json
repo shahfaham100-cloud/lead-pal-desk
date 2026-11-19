@@ -29,6 +29,13 @@
       "when": 1795078750638,
       "tag": "0003_register_server_token",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1795080418139,
+      "tag": "0004_harden_update_and_file_rules",
+      "breakpoints": true
     }
   ]
 }
